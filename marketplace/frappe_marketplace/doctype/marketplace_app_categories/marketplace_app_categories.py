@@ -14,7 +14,7 @@ class MarketplaceAppCategories(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		category: DF.Data | None
+		category: DF.Data
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

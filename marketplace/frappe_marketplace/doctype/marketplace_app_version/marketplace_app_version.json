@@ -6,20 +6,32 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "version"
+  "version",
+  "source"
  ],
  "fields": [
   {
    "fieldname": "version",
-   "fieldtype": "Data",
-   "label": "Version"
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Version",
+   "options": "Frappe Version",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Source",
+   "options": "App Source",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-26 17:34:25.462344",
+ "modified": "2025-12-29 14:30:15.611638",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "Marketplace App Version",

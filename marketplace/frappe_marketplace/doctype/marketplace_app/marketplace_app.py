@@ -23,9 +23,6 @@ class MarketplaceApp(WebsiteGenerator):
 		from marketplace.frappe_marketplace.doctype.marketplace_app_version.marketplace_app_version import (
 			MarketplaceAppVersion,
 		)
-		from marketplace.frappe_marketplace.doctype.marketplace_localisation_app.marketplace_localisation_app import (
-			MarketplaceLocalisationApp,
-		)
 
 		after_install_script: DF.Code | None
 		after_uninstall_script: DF.Code | None
@@ -38,7 +35,6 @@ class MarketplaceApp(WebsiteGenerator):
 		documentation: DF.Data | None
 		frappe_approved: DF.Check
 		image: DF.AttachImage | None
-		localisation_apps: DF.Table[MarketplaceLocalisationApp]
 		long_description: DF.TextEditor | None
 		message: DF.TextEditor | None
 		outgoing_email: DF.Data | None

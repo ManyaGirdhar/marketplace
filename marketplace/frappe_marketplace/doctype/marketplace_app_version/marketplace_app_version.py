@@ -17,7 +17,8 @@ class MarketplaceAppVersion(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		version: DF.Data | None
+		source: DF.Link
+		version: DF.Link
 	# end: auto-generated types
 
 	pass

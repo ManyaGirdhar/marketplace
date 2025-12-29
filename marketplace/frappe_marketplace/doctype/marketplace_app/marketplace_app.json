@@ -63,7 +63,6 @@
   "dashboard_tab",
   "onboarding_related_section",
   "show_for_site_creation",
-  "localisation_apps",
   "section_break_tlpw",
   "average_rating",
   "others_section",
@@ -385,12 +384,6 @@
    "label": "Show for site creation"
   },
   {
-   "fieldname": "localisation_apps",
-   "fieldtype": "Table",
-   "label": "Localisation Apps",
-   "options": "Marketplace Localisation App"
-  },
-  {
    "fieldname": "section_break_tlpw",
    "fieldtype": "Section Break",
    "label": "Marketplace Page"
@@ -421,7 +414,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2025-12-26 17:32:37.246832",
+ "modified": "2025-12-29 16:31:57.517211",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "Marketplace App",
@@ -447,7 +440,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Marketplace Manager",
+   "role": "Press Marketplace Manager",
    "select": 1,
    "share": 1,
    "write": 1

@@ -12,14 +12,16 @@
   {
    "fieldname": "category",
    "fieldtype": "Data",
-   "label": "Category"
+   "in_list_view": 1,
+   "label": "Category",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-26 17:35:07.065856",
+ "modified": "2025-12-29 14:07:50.328481",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "Marketplace App Categories",
