@@ -17,7 +17,7 @@
   "repository_owner",
   "branch",
   "section_break_8",
-  "team",
+  "publisher",
   "public",
   "column_break_11",
   "github_installation_id",
@@ -96,15 +96,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "team",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Team",
-   "options": "Team",
-   "reqd": 1
-  },
-  {
    "default": "0",
    "fieldname": "public",
    "fieldtype": "Check",
@@ -175,6 +166,15 @@
    "fieldtype": "Datetime",
    "label": "Last Synced",
    "read_only": 1
+  },
+  {
+   "fieldname": "publisher",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Publisher",
+   "options": "Marketplace Publisher",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -184,7 +184,7 @@
    "link_fieldname": "reference_name"
   }
  ],
- "modified": "2025-12-29 13:12:14.145793",
+ "modified": "2025-12-29 19:14:34.779496",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "App Source",

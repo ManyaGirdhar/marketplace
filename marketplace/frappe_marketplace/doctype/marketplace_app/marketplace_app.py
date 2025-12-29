@@ -20,53 +20,21 @@ class MarketplaceApp(WebsiteGenerator):
 		from marketplace.frappe_marketplace.doctype.marketplace_app_screenshot.marketplace_app_screenshot import (
 			MarketplaceAppScreenshot,
 		)
-		from marketplace.frappe_marketplace.doctype.marketplace_app_version.marketplace_app_version import (
-			MarketplaceAppVersion,
-		)
 
-		after_install_script: DF.Code | None
-		after_uninstall_script: DF.Code | None
 		app: DF.Link
-		average_rating: DF.Float
 		categories: DF.Table[MarketplaceAppCategories]
-		collect_feedback: DF.Check
-		custom_verify_template: DF.Check
 		description: DF.SmallText
 		documentation: DF.Data | None
-		frappe_approved: DF.Check
 		image: DF.AttachImage | None
 		long_description: DF.TextEditor | None
-		message: DF.TextEditor | None
-		outgoing_email: DF.Data | None
-		outgoing_sender_name: DF.Data | None
-		poll_method: DF.Data | None
 		privacy_policy: DF.Data | None
 		published: DF.Check
 		published_on: DF.Date | None
-		review_stage: DF.Literal[
-			"Not Started",
-			"Description Missing",
-			"Logo Missing",
-			"App Release Not Reviewed",
-			"Ready for Review",
-			"Ready to Publish",
-			"Rejected",
-		]
+		publisher: DF.Link | None
 		route: DF.Data | None
-		run_after_install_script: DF.Check
-		run_after_uninstall_script: DF.Check
 		screenshots: DF.Table[MarketplaceAppScreenshot]
-		show_for_site_creation: DF.Check
-		signature: DF.TextEditor | None
-		site_config: DF.JSON | None
-		sources: DF.Table[MarketplaceAppVersion]
 		status: DF.Literal["Draft", "Published", "In Review", "Attention Required", "Rejected", "Disabled"]
-		stop_auto_review: DF.Check
-		subject: DF.Data | None
-		subscription_type: DF.Literal["Free", "Paid", "Freemium"]
-		subscription_update_hook: DF.Data | None
 		support: DF.Data | None
-		team: DF.Link | None
 		terms_of_service: DF.Data | None
 		title: DF.Data
 		website: DF.Data | None

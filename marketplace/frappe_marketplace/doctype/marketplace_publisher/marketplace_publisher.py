@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class Team(Document):
+class MarketplacePublisher(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,7 +14,7 @@ class Team(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		enabled: DF.Check
+		enabled: DF.Link
 	# end: auto-generated types
 
 	pass

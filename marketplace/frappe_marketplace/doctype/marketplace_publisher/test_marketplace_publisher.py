@@ -11,9 +11,9 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class IntegrationTestMarketplacePublisherProfile(IntegrationTestCase):
+class IntegrationTestMarketplacePublisher(IntegrationTestCase):
 	"""
-	Integration tests for MarketplacePublisherProfile.
+	Integration tests for MarketplacePublisher.
 	Use this class for testing interactions between multiple components.
 	"""
 

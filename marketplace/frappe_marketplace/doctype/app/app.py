@@ -20,11 +20,11 @@ class App(Document):
 		frappe: DF.Check
 		installation: DF.Data | None
 		public: DF.Check
+		publisher: DF.Link | None
 		repo: DF.Data | None
 		repo_owner: DF.Data | None
 		scrubbed: DF.Data | None
 		skip_review: DF.Check
-		team: DF.Link | None
 		title: DF.Data
 		url: DF.Data | None
 	# end: auto-generated types

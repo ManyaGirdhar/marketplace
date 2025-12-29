@@ -19,7 +19,7 @@
   "repo_owner",
   "repo",
   "installation",
-  "team",
+  "publisher",
   "enable_auto_deploy",
   "skip_review"
  ],
@@ -104,13 +104,6 @@
    "label": "Installation"
   },
   {
-   "fieldname": "team",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Team",
-   "options": "Team"
-  },
-  {
    "default": "0",
    "fieldname": "enable_auto_deploy",
    "fieldtype": "Check",
@@ -123,10 +116,17 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Skip Review"
+  },
+  {
+   "fieldname": "publisher",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Publisher",
+   "options": "Marketplace Publisher"
   }
  ],
  "links": [],
- "modified": "2025-12-26 17:31:42.517905",
+ "modified": "2025-12-29 19:15:30.026389",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "App",

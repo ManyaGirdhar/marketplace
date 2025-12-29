@@ -29,11 +29,11 @@ class AppSource(Document):
 		last_github_response: DF.Code | None
 		last_synced: DF.Datetime | None
 		public: DF.Check
+		publisher: DF.Link
 		repository: DF.Data | None
 		repository_owner: DF.Data | None
 		repository_url: DF.Data
 		required_apps: DF.Table[RequiredApps]
-		team: DF.Link
 		uninstalled: DF.Check
 		versions: DF.Table[AppSourceVersion]
 	# end: auto-generated types
