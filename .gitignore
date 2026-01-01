@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 *.pyc
 *.py~
+marketplace/www/marketplace/index.html
+marketplace/public/frontend/
+marketplace/public/node_modules
 
 # Distribution / packaging
 .Python

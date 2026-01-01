@@ -1,0 +1,16 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "corepack-enable": "corepack enable",
+    "install": "npm run corepack-enable && cd frontend &&  pnpm install",
+    "dev": "cd frontend && pnpm run dev",
+    "build": "npm run corepack-enable && cd frontend  && pnpm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.0"
+}

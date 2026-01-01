@@ -1,0 +1,29 @@
+{
+  "name": "marketplace",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "lint": "pnpm --filter app lint",
+    "format": "pnpm --filter app format",
+    "dev": "pnpm --filter app dev",
+    "check-types": "pnpm --filter app check-types",
+    "build": "npm run corepack-enable && pnpm --filter app build --base=/assets/marketplace/frontend/ && npm run copy-html-entry",
+    "serve": "pnpm --filter app preview",
+    "preview-storybook": "pnpm --filter storybook-config preview-storybook",
+    "storybook": "pnpm --filter storybook-config storybook",
+    "test": "pnpm --filter app test",
+    "test:e2e": "pnpm --filter app test:e2e",
+    "test:e2e-ui": "pnpm --filter app test:e2e-ui",
+    "copy-html-entry": "cp ../marketplace/public/frontend/index.html ../marketplace/www/marketplace/index.html",
+    "corepack-enable": "corepack enable"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
