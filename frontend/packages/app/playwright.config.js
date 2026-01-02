@@ -1,4 +1,4 @@
-import baseConfig from "@frappe-ui-react-starter/shared-config/playwright";
+import baseConfig from "@marketplace/shared-config/playwright";
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({

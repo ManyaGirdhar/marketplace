@@ -2,7 +2,7 @@
  * @see https://prettier.io/docs/configuration
  * @type {import("prettier").Config}
  */
-import defaultConfig from "@frappe-ui-react-starter/shared-config/prettier";
+import defaultConfig from "../shared-config/prettier/index.js";
 
 const config = {
 	...defaultConfig,

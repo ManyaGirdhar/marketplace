@@ -22,7 +22,7 @@ const config: StorybookConfig = {
         return mergeConfig(config, {
             resolve: {
                 alias: {
-                    '@frappe-ui-react-starter/design-system': path.resolve(__dirname, '../../design-system/src'),
+                    '@marketplace/design-system': path.resolve(__dirname, '../../design-system/src'),
                 },
             },
             
