@@ -5,15 +5,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "enabled"
+  "user"
  ],
  "fields": [
   {
    "default": "0",
-   "fieldname": "enabled",
+   "fieldname": "user",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Publisher",
+   "label": "User",
    "options": "User",
    "reqd": 1
   }
@@ -21,7 +21,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-29 18:38:03.128645",
+ "modified": "2026-01-02 12:10:33.381671",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "Marketplace Publisher",

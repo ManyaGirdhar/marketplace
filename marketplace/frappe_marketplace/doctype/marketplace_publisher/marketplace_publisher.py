@@ -14,7 +14,7 @@ class MarketplacePublisher(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		enabled: DF.Link
+		user: DF.Link
 	# end: auto-generated types
 
 	pass
