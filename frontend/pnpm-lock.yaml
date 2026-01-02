@@ -10,7 +10,7 @@ importers:
 
   packages/app:
     dependencies:
-      '@frappe-ui-react-starter/design-system':
+      '@marketplace/design-system':
         specifier: workspace:*
         version: link:../design-system
       '@rtcamp/frappe-ui-react':
@@ -35,7 +35,7 @@ importers:
       '@eslint/js':
         specifier: ^9.33.0
         version: 9.35.0
-      '@frappe-ui-react-starter/shared-config':
+      '@marketplace/shared-config':
         specifier: workspace:*
         version: link:../shared-config
       '@playwright/test':
@@ -141,7 +141,7 @@ importers:
         specifier: ^19
         version: 19.1.1
     devDependencies:
-      '@frappe-ui-react-starter/shared-config':
+      '@marketplace/shared-config':
         specifier: workspace:*
         version: link:../shared-config
       '@storybook/react-vite':
@@ -244,7 +244,7 @@ importers:
 
   packages/storybook-config:
     dependencies:
-      '@frappe-ui-react-starter/design-system':
+      '@marketplace/design-system':
         specifier: workspace:*
         version: link:../design-system
       '@tailwindcss/vite':
@@ -266,7 +266,7 @@ importers:
       '@eslint/js':
         specifier: ^9.33.0
         version: 9.35.0
-      '@frappe-ui-react-starter/shared-config':
+      '@marketplace/shared-config':
         specifier: workspace:*
         version: link:../shared-config
       '@storybook/addon-a11y':

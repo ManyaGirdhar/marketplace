@@ -8,7 +8,7 @@
 		"build": "storybook build"
 	},
 	"dependencies": {
-		"@frappe-ui-react-starter/design-system": "workspace:*",
+		"@marketplace/design-system": "workspace:*",
 		"@tailwindcss/vite": "^4.1.12",
 		"lucide-react": "^0.542.0",
 		"react": "^19.1.1",
@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "^4.1.1",
 		"@eslint/js": "^9.33.0",
-		"@frappe-ui-react-starter/shared-config": "workspace:*",
+		"@marketplace/shared-config": "workspace:*",
 		"@storybook/addon-a11y": "^9.1.3",
 		"@storybook/addon-docs": "^9.1.3",
 		"@storybook/addon-onboarding": "^9.1.3",
