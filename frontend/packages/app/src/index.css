@@ -1,4 +1,4 @@
-@import "@frappe-ui-react-starter/shared-config/tailwind";
+@import "@marketplace/shared-config/tailwind";
 
 /*
 * Tailwind reads the @source directive, follows the path you provide, scans the files inside that directory, 
