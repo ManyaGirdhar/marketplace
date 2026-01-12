@@ -1,0 +1,11 @@
+{
+  "name": "marketplace",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/frappe-community/marketplace.git",
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "dev": "cd frontend && yarn dev",
+    "build": "cd frontend && yarn build"
+  }
+}

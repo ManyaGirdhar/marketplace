@@ -7,6 +7,12 @@ app_license = "agpl-3.0"
 
 # Apps
 # ------------------
+website_route_rules = [
+	{
+		"from_route": "/marketplace/<path:app_path>",
+		"to_route": "marketplace",
+	},
+]
 
 # required_apps = []
 
