@@ -17,6 +17,7 @@ import {
 	pageMetaPlugin,
 	resourcesPlugin,
 	setConfig,
+	FrappeUI,
 } from "frappe-ui";
 
 import "./index.css";
@@ -39,12 +40,23 @@ setConfig("resourceFetcher", frappeRequest);
 app.use(router);
 app.use(resourcesPlugin);
 app.use(pageMetaPlugin);
+app.use(FrappeUI);
 
 const socket = initSocket();
 app.config.globalProperties.$socket = socket;
 
 for (const key in globalComponents) {
 	app.component(key, globalComponents[key]);
+}
+
+if (import.meta.env.DEV) {
+	frappeRequest({
+		url: "/api/method/marketplace.www.marketplace.index.get_context_for_dev",
+	}).then((values) => {
+		for (let key in values) {
+			window[key] = values[key];
+		}
+	});
 }
 
 app.mount("#app");
