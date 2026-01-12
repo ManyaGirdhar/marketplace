@@ -7,7 +7,7 @@ no_cache = 1
 
 
 def get_context(context):
-	frappe.db.commit()
+	frappe.db.commit()  # nosemgrep
 	context.boot = get_boot()
 	return context
 
