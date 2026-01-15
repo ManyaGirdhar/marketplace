@@ -9,8 +9,8 @@ app_license = "agpl-3.0"
 # ------------------
 website_route_rules = [
 	{
-		"from_route": "/marketplace/<path:app_path>",
-		"to_route": "marketplace",
+		"from_route": "/dashboard/<path:app_path>",
+		"to_route": "dashboard",
 	},
 ]
 

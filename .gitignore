@@ -36,7 +36,7 @@ venv.bak/
 node_modules/
 marketplace/public/marketplace
 marketplace/public/node_modules
-marketplace/www/marketplace/index.html
+marketplace/www/dashboard/index.html
 jspm_packages/
 
 # IDEs and editors

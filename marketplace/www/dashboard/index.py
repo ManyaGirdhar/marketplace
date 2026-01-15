@@ -7,7 +7,6 @@ no_cache = 1
 
 
 def get_context(context):
-	frappe.db.commit()  # nosemgrep
 	context.boot = get_boot()
 	return context
 
@@ -36,4 +35,4 @@ def get_boot():
 
 
 def get_default_route():
-	return "/marketplace"
+	return "/dashboard"

@@ -16,7 +16,7 @@ const routes = [
 ];
 
 const router = createRouter({
-	history: createWebHistory("/marketplace"),
+	history: createWebHistory("/dashboard"),
 	routes,
 });
 
