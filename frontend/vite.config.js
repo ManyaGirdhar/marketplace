@@ -14,7 +14,7 @@ export default defineConfig({
 			lucideIcons: true,
 			buildConfig: {
 				outDir: "../marketplace/public/marketplace",
-				indexHtmlPath: "../marketplace/www/marketplace/index.html",
+				indexHtmlPath: "../marketplace/www/dashboard/index.html",
 				emptyOutDir: true,
 				sourcemap: true,
 			},
