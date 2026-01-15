@@ -1,0 +1,21 @@
+{
+  "name": "marketplace",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/frappe-community/marketplace.git",
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "dev": "cd frontend && yarn dev",
+    "build": "cd frontend && yarn build"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "frappe-ui": "^0.1.250",
+    "tailwindcss": "^3.4.15",
+    "postcss": "^8.4.5",
+    "autoprefixer": "^10.4.2"
+  }
+}
