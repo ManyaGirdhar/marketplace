@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 import frappe
 from frappe.utils.oauth import get_oauth2_authorize_url
 
