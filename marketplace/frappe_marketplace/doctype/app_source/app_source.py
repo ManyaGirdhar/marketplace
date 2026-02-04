@@ -19,9 +19,10 @@ class AppSource(Document):
 		)
 		from marketplace.frappe_marketplace.doctype.required_apps.required_apps import RequiredApps
 
-		app: DF.Link
-		app_title: DF.Data
-		branch: DF.Data
+		app: DF.Link | None
+		app_title: DF.Data | None
+		branch: DF.Data | None
+		current_release: DF.Link | None
 		enabled: DF.Check
 		frappe: DF.Check
 		github_installation_id: DF.Data | None
@@ -29,10 +30,10 @@ class AppSource(Document):
 		last_github_response: DF.Code | None
 		last_synced: DF.Datetime | None
 		public: DF.Check
-		publisher: DF.Link
+		publisher: DF.Link | None
 		repository: DF.Data | None
 		repository_owner: DF.Data | None
-		repository_url: DF.Data
+		repository_url: DF.Data | None
 		required_apps: DF.Table[RequiredApps]
 		uninstalled: DF.Check
 		versions: DF.Table[AppSourceVersion]

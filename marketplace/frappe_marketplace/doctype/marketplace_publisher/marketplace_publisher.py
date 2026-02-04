@@ -1,7 +1,7 @@
 # Copyright (c) 2025, BWH and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 
@@ -14,7 +14,26 @@ class MarketplacePublisher(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		user: DF.Link
+		company_name: DF.Data | None
+		contact_email: DF.Data | None
+		github_access_token: DF.Password | None
+		github_username: DF.Data | None
+		is_setup_complete: DF.Check
+		logo: DF.AttachImage | None
+		publisher_name: DF.Data | None
+		publisher_type: DF.Literal["Individual", "Organization"]
+		user: DF.Link | None
+		website: DF.Data | None
 	# end: auto-generated types
 
-	pass
+
+def after_insert(self):
+	# 1. Target the user linked to this publisher profile
+	user = frappe.get_doc("User", self.user)
+
+	# 2. Check if the user already has the role to avoid duplicates
+	if not user.has_role("Marketplace Publisher"):
+		user.add_roles("Marketplace Publisher")
+
+	# 3. Optional: You can also send a welcome email here
+	# frappe.msgprint(f"Role 'Marketplace Publisher' assigned to {self.user}")
