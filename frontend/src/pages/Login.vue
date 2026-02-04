@@ -60,7 +60,7 @@ function submit() {
 }
 
 const githubLogin = createResource({
-	url: "marketplace.api.github.get_github_auth_url",
+	url: "marketplace.api.github.get_github_login_url",
 	auto: false,
 	onSuccess(url: string) {
 		if (url) window.location.href = url;
