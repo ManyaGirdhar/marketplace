@@ -8,7 +8,7 @@ from frappe.utils import get_url, md_to_html
 
 
 @frappe.whitelist()
-def initialize_app_step_1(form_data: str, repo_data=None):
+def initialize_app_step_1(form_data: str, repo_data: dict | None = None):
 	try:
 		data = frappe.parse_json(form_data)
 		if not repo_data:

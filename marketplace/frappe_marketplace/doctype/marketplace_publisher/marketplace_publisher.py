@@ -25,15 +25,3 @@ class MarketplacePublisher(Document):
 		user: DF.Link | None
 		website: DF.Data | None
 	# end: auto-generated types
-
-
-def after_insert(self):
-	# 1. Target the user linked to this publisher profile
-	user = frappe.get_doc("User", self.user)
-
-	# 2. Check if the user already has the role to avoid duplicates
-	if not user.has_role("Marketplace Publisher"):
-		user.add_roles("Marketplace Publisher")
-
-	# 3. Optional: You can also send a welcome email here
-	# frappe.msgprint(f"Role 'Marketplace Publisher' assigned to {self.user}")
