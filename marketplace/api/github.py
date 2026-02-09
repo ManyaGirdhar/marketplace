@@ -39,12 +39,12 @@ def get_github_headers():
 
 # OAuth / Login
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True) # nosemgrep
 def get_github_login_url():
     return get_oauth2_authorize_url("github", "/dashboard")
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True) # nosemgrep
 def get_github_auth_url():
     success_uri = "http://newmktplace.localhost:8080/publishersetup"
     connected_app = get_connected_app()
@@ -107,7 +107,7 @@ def get_publisher_repos():
     return res.json() if res.status_code == 200 else []
 
 @frappe.whitelist()
-def fetch_repo_info(repo_url):
+def fetch_repo_info(repo_url: str):
     parts = repo_url.rstrip("/").split("/")
     owner, repo_name = parts[-2], parts[-1]
     headers = get_github_headers()

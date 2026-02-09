@@ -1,4 +1,5 @@
-import json
+import hmac
+from typing import Optional
 
 import frappe
 import requests
@@ -7,7 +8,7 @@ from frappe.utils import get_url, md_to_html
 
 
 @frappe.whitelist()
-def initialize_app_step_1(form_data, repo_data=None):
+def initialize_app_step_1(form_data: str, repo_data=None):
 	try:
 		data = frappe.parse_json(form_data)
 		if not repo_data:
@@ -134,7 +135,6 @@ def run_background_tasks(release_name, source_name, repo_full_name, mkt_app_name
 	readme_html = fetch_readme_as_html(source_doc)
 	if readme_html:
 		frappe.db.set_value("Marketplace App", mkt_app_name, "long_description", readme_html)
-		frappe.db.commit()
 
 
 def fetch_readme_as_html(source_doc):
@@ -196,9 +196,11 @@ def get_github_token(user):
 	return token_cache.get_password("access_token") if token_cache else None
 
 
-@frappe.whitelist(allow_guest=True)
-def ci_callback(release_id, status, secret_key, commit_hash=None):
-	if secret_key != frappe.conf.get("marketplace_ci_secret"):
+@frappe.whitelist(allow_guest=True)  # nosemgrep
+def ci_callback(release_id: str, status: str, secret_key: str, commit_hash: str | None = None):
+	expected_secret = frappe.conf.get("marketplace_ci_secret")
+
+	if not expected_secret or not hmac.compare_digest(str(secret_key), str(expected_secret)):
 		frappe.throw(_("Unauthorized"), frappe.PermissionError)
 
 	status_map = {"success": "Passed", "failure": "Failed", "cancelled": "Failed", "timed_out": "Failed"}
@@ -210,18 +212,16 @@ def ci_callback(release_id, status, secret_key, commit_hash=None):
 		update_modified=True,
 	)
 
-	frappe.db.commit()
 	return {"status": "Updated"}
 
 
 @frappe.whitelist()
-def finalize_submission(app_release_id):
+def finalize_submission(app_release_id: str):
 	release = frappe.get_doc("App Release", app_release_id)
 
 	mkt_app_name = frappe.db.get_value("Marketplace App", {"app": release.app}, "name")
 
 	if mkt_app_name:
 		frappe.db.set_value("Marketplace App", mkt_app_name, "status", "Pending Review")
-		frappe.db.commit()
 
 	return {"status": "success"}
