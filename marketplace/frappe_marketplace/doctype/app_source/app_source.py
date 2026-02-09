@@ -26,6 +26,7 @@ class AppSource(Document):
 		enabled: DF.Check
 		frappe: DF.Check
 		github_installation_id: DF.Data | None
+		github_repo_full_name: DF.Data | None
 		last_github_poll_failed: DF.Check
 		last_github_response: DF.Code | None
 		last_synced: DF.Datetime | None

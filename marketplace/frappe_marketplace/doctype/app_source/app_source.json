@@ -16,6 +16,7 @@
   "data_3",
   "repository",
   "repository_owner",
+  "github_repo_full_name",
   "branch",
   "section_break_8",
   "publisher",
@@ -177,6 +178,11 @@
    "fieldtype": "Link",
    "label": "Current Release",
    "options": "App Release"
+  },
+  {
+   "fieldname": "github_repo_full_name",
+   "fieldtype": "Data",
+   "label": "Github Repo Full Name"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -186,7 +192,7 @@
    "link_fieldname": "reference_name"
   }
  ],
- "modified": "2026-02-04 13:39:22.033847",
+ "modified": "2026-02-06 13:09:16.592686",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "App Source",
