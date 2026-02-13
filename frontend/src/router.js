@@ -3,21 +3,50 @@ import { createRouter, createWebHistory } from "vue-router";
 import { session } from "./data/session";
 import { call } from "frappe-ui";
 
-const routes = [
+const publicRoutes = [
 	{ path: "/", name: "Home", component: () => import("@/pages/Home.vue") },
 	{ name: "Login", path: "/account/login", component: () => import("@/pages/Login.vue") },
-	{
-		name: "PublisherSetup",
-		path: "/publishersetup",
-		component: () => import("@/pages/PublisherSetup.vue"),
-	},
-	{ name: "MyApps", path: "/my-apps", component: () => import("@/pages/MyApps.vue") },
-	{ name: "CreateApp", path: "/create-app", component: () => import("@/pages/CreateApp.vue") },
-	{ name: "ManageApp", path: "/app/:appName", component: () => import("@/pages/ManageApp.vue") },
 ];
 
+const dashboardRoutes = {
+	path: "/dashboard",
+	component: () => import("@/pages/DashboardLayout.vue"),
+	children: [
+		{ path: "", redirect: "/dashboard/my-apps" },
+
+		{
+			name: "PublisherSetup",
+			path: "publishersetup",
+			component: () => import("@/pages/PublisherSetup.vue"),
+		},
+		{ name: "MyApps", path: "my-apps", component: () => import("@/pages/MyApps.vue") },
+		{
+			name: "CreateApp",
+			path: "create-app",
+			component: () => import("@/pages/CreateApp.vue"),
+		},
+		{
+			name: "PublisherProfile",
+			path: "publisher-profile",
+			component: () => import("@/pages/PublisherProfile.vue"),
+		},
+		{
+			name: "ManageApp",
+			path: "app/:appName",
+			component: () => import("@/pages/ManageApp.vue"),
+		},
+		{
+			name: "AppDetails",
+			path: "my-apps/:app_name",
+			component: () => import("@/pages/AppDetails.vue"),
+			props: true,
+		},
+	],
+};
+
+const routes = [...publicRoutes, dashboardRoutes];
 const router = createRouter({
-	history: createWebHistory("/dashboard"),
+	history: createWebHistory(),
 	routes,
 });
 
@@ -35,10 +64,9 @@ router.beforeEach(async (to, from, next) => {
 	const isLoggedIn = session.isLoggedIn;
 
 	// 2. Auth Gate
-	if (!isLoggedIn) {
-		if (to.name === "Login") {
-			return next();
-		}
+	const isDashboardRoute = to.path.startsWith("/dashboard");
+
+	if (isDashboardRoute && !session.isLoggedIn) {
 		return next({ name: "Login" });
 	}
 
