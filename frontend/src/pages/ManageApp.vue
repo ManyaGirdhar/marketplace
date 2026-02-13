@@ -1,36 +1,18 @@
 <template>
-	<div class="flex h-screen bg-black text-white font-sans overflow-hidden">
-		<Sidebar
-			:header="sidebarConfig.header"
-			:sections="sidebarConfig.sections"
-			class="border-r border-gray-800"
-		/>
-
+	<div
+		class="flex h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-hidden"
+	>
 		<div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 			<header
-				class="flex items-center justify-between px-8 py-5 border-b border-gray-800 bg-black/60 backdrop-blur-md sticky top-0 z-20"
+				class="flex items-center justify-between px-8 py-5 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/70 backdrop-blur sticky top-0 z-20"
 			>
 				<div class="space-y-1">
 					<p class="text-xs uppercase tracking-widest text-gray-500">Submit App</p>
 
 					<div class="flex items-center gap-4">
-						<h1 class="text-lg font-semibold text-white truncate max-w-[420px]">
+						<h1 class="text-lg font-semibold truncate max-w-[420px]">
 							{{ form.app_title || "New App" }}
 						</h1>
-
-						<!-- Progress Dots -->
-						<div class="flex items-center gap-2">
-							<div
-								v-for="step in 3"
-								:key="step"
-								:class="[
-									'h-2 rounded-full transition-all duration-300',
-									currentStep >= step
-										? 'w-6 bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]'
-										: 'w-2 bg-gray-700',
-								]"
-							/>
-						</div>
 					</div>
 				</div>
 
@@ -45,7 +27,7 @@
 				</Button>
 			</header>
 
-			<main class="flex-1 overflow-y-auto bg-[#050505]">
+			<main class="flex-1 overflow-y-auto">
 				<div class="max-w-5xl mx-auto px-8 py-10">
 					<div class="mb-10 flex items-center justify-between">
 						<div class="flex gap-8">
@@ -58,10 +40,10 @@
 									:class="[
 										'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
 										currentStep > index + 1
-											? 'bg-white text-black'
+											? 'bg-gray-900 text-white dark:bg-white dark:text-black'
 											: currentStep === index + 1
-											? 'border border-white text-white'
-											: 'border border-gray-700 text-gray-600',
+											? 'border border-gray-900 dark:border-white'
+											: 'border border-gray-300 dark:border-gray-700 text-gray-400',
 									]"
 								>
 									{{ index + 1 }}
@@ -69,7 +51,7 @@
 								<span
 									:class="[
 										'text-sm',
-										currentStep === index + 1 ? 'text-white' : 'text-gray-500',
+										currentStep === index + 1 ? '' : 'text-gray-500',
 									]"
 								>
 									{{ label }}
@@ -78,7 +60,9 @@
 						</div>
 					</div>
 
-					<div class="bg-[#0A0A0A] border border-gray-800 rounded-3xl p-8">
+					<div
+						class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 shadow-sm"
+					>
 						<Step1Details
 							v-if="currentStep === 1"
 							:form="form"
@@ -104,7 +88,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Sidebar, Button, call } from "frappe-ui";
+import { Button, call } from "frappe-ui";
 
 import Step1Details from "./wizard_steps/Step1Details.vue";
 import Step2Validation from "./wizard_steps/Step2Validation.vue";
@@ -178,29 +162,6 @@ const isNextDisabled = computed(() => {
 		return !validationPassed.value || processing.value;
 	}
 	return processing.value;
-});
-
-const sidebarConfig = reactive({
-	header: {
-		title: "Marketplace",
-		subtitle: "Publisher Portal",
-		logo: "",
-		menuItems: [
-			{ label: "Settings", icon: "settings", onClick: () => {} },
-			{ label: "Logout", icon: "log-out", onClick: () => {} },
-		],
-	},
-	sections: [
-		{
-			items: [
-				{ label: "My Apps", to: "/my-apps", active: true },
-				{ label: "Notifications", to: "/notifications" },
-			],
-		},
-		{
-			items: [{ label: "Build Logs", to: "/logs" }],
-		},
-	],
 });
 
 async function handleContinue() {

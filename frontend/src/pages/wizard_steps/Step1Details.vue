@@ -1,68 +1,54 @@
 <template>
-	<div class="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+	<div class="space-y-10">
 		<section class="space-y-6">
-			<h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">
-				App Identity
-			</h2>
+			<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">App Identity</h2>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 				<div class="space-y-6">
-					<div class="space-y-1">
-						<TextInput
-							label="App Title"
-							v-model="form.app_title"
-							placeholder="e.g. Airplane Mode"
-						/>
-						<p class="text-xs text-gray-500">
-							Public name shown on Frappe Marketplace
-						</p>
-					</div>
+					<TextInput
+						label="App Title"
+						v-model="form.app_title"
+						placeholder="e.g. Airplane Mode"
+						description="Public name shown on Marketplace"
+					/>
 
-					<div class="space-y-1">
-						<TextInput
-							label="App Name"
-							v-model="form.app_name"
-							variant="read-only"
-							class="opacity-80"
-						/>
-						<p class="text-xs text-gray-500">Derived from repository (immutable)</p>
-					</div>
+					<TextInput
+						label="App Name"
+						v-model="form.app_name"
+						variant="read-only"
+						description="Derived from repository (immutable)"
+					/>
 
-					<div class="space-y-1">
-						<TextInput
-							label="Repository URL"
-							v-model="form.repo_url"
-							variant="read-only"
-							class="opacity-80"
-						/>
-						<p class="text-xs text-gray-500">Used to fetch branches and metadata</p>
-					</div>
+					<TextInput
+						label="Repository URL"
+						v-model="form.repo_url"
+						variant="read-only"
+						description="Used to fetch branches and metadata"
+					/>
 				</div>
 
 				<div class="space-y-6">
-					<div class="p-6 border border-gray-800 rounded-2xl bg-[#0A0A0A]">
-						<div class="flex items-center gap-2 mb-4">
-							<FeatherIcon name="layers" class="w-4 h-4 text-gray-500" />
-							<label
-								class="text-xs uppercase font-semibold tracking-widest text-gray-400"
-							>
+					<div
+						class="border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-800"
+					>
+						<div class="flex items-center gap-2 mb-3">
+							<FeatherIcon
+								name="layers"
+								class="w-4 h-4 text-gray-500 dark:text-gray-400"
+							/>
+							<p class="text-sm font-medium text-gray-700 dark:text-gray-200">
 								Detected Dependencies
-							</label>
+							</p>
 						</div>
 
 						<div class="flex flex-wrap gap-2">
-							<Badge
-								v-for="app in dependencies"
-								:key="app"
-								theme="gray"
-								variant="subtle"
-							>
+							<Badge v-for="app in dependencies" :key="app">
 								{{ app }}
 							</Badge>
 
 							<div
 								v-if="loadingMeta"
-								class="flex items-center gap-2 text-gray-600 text-sm"
+								class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
 							>
 								<LoadingIndicator class="w-4 h-4" />
 								Scanning hooks.py…
@@ -70,7 +56,7 @@
 
 							<div
 								v-else-if="!dependencies.length"
-								class="text-gray-600 text-sm italic"
+								class="text-sm text-gray-400 dark:text-gray-500 italic"
 							>
 								No dependencies declared
 							</div>
@@ -78,27 +64,34 @@
 					</div>
 
 					<div
-						class="flex items-center gap-5 p-5 border border-gray-800 rounded-2xl bg-[#0A0A0A]"
+						class="border border-gray-200 dark:border-gray-700 rounded-xl p-5 flex items-center gap-5 bg-white dark:bg-gray-800"
 					>
 						<div
-							class="w-16 h-16 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden"
+							class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden"
 						>
 							<img
 								v-if="form.logo"
 								:src="form.logo"
 								class="w-full h-full object-cover"
 							/>
-							<FeatherIcon v-else name="image" class="w-6 h-6 text-gray-700" />
+							<FeatherIcon
+								v-else
+								name="image"
+								class="w-6 h-6 text-gray-400 dark:text-gray-500"
+							/>
 						</div>
 
-						<div class="space-y-1">
-							<p class="text-sm font-medium text-gray-300">App Logo</p>
-							<p class="text-xs text-gray-500">Displayed on Marketplace listing</p>
+						<div>
+							<p class="text-sm font-medium text-gray-800 dark:text-gray-100">
+								App Logo
+							</p>
+							<p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+								Displayed on Marketplace listing
+							</p>
 
 							<FileUploader @success="(file) => (form.logo = file.file_url)">
 								<template #default="{ openFileSelector, uploading, progress }">
 									<Button
-										variant="subtle"
 										size="sm"
 										@click="openFileSelector"
 										:loading="uploading"
@@ -113,67 +106,61 @@
 			</div>
 		</section>
 
-		<section class="space-y-4">
-			<div class="flex items-start justify-between px-1">
+		<section>
+			<div
+				class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-6"
+			>
 				<div>
-					<h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">
+					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">
 						Compatibility Mapping
-					</h3>
-					<p class="text-xs text-gray-500 mt-1">
-						Map supported Frappe versions to compatible source branches
+					</h2>
+					<p class="text-sm text-gray-500 dark:text-gray-400">
+						Map Frappe versions to the branch that supports them.
 					</p>
 				</div>
 
-				<Button variant="ghost" size="sm" @click="addRow">
-					<template #prefix>
-						<FeatherIcon name="plus" class="w-3 h-3" />
-					</template>
-					Add Version
-				</Button>
-			</div>
-
-			<div class="border border-gray-800 rounded-2xl overflow-hidden bg-[#0A0A0A]">
 				<div
-					class="grid grid-cols-12 bg-gray-900/50 px-6 py-3 border-b border-gray-800 text-xs font-bold text-gray-500 uppercase tracking-widest"
+					class="grid grid-cols-[180px_40px_1fr_40px] text-xs text-gray-500 dark:text-gray-400 px-2"
 				>
-					<div class="col-span-6">Frappe Version</div>
-					<div class="col-span-5">Source Branch</div>
-					<div class="col-span-1"></div>
+					<div>Frappe Version</div>
+					<div></div>
+					<div>Supported Branch</div>
+					<div></div>
 				</div>
 
-				<div
-					v-for="(row, index) in form.versions"
-					:key="index"
-					class="grid grid-cols-12 px-6 py-4 border-b border-gray-800 last:border-0 items-center hover:bg-white/5 transition-colors"
-				>
-					<div class="col-span-6 pr-4">
+				<div class="space-y-3">
+					<div
+						v-for="(row, index) in form.versions"
+						:key="index"
+						class="grid grid-cols-[180px_40px_1fr_40px] items-center gap-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-3"
+					>
 						<Select
 							:options="frappeVersionOptions"
 							v-model="row.version"
-							placeholder="Select Frappe Version"
+							placeholder="Select version"
 							:loading="versionsResource.loading"
 						/>
-					</div>
+						<div class="text-center text-gray-400">→</div>
 
-					<div class="col-span-5 pr-4">
-						<Select
+						<Autocomplete
 							:options="branchOptions"
 							v-model="row.branch"
-							placeholder="Select Branch"
+							placeholder="Search branch"
 							:loading="loadingMeta"
 						/>
-					</div>
-
-					<div class="col-span-1 text-right">
-						<Button variant="ghost" @click="removeRow(index)">
-							<template #icon>
-								<FeatherIcon
-									name="x"
-									class="w-4 h-4 text-gray-600 hover:text-red-500"
-								/>
-							</template>
+						<Button variant="ghost" size="sm" @click="removeRow(index)">
+							<FeatherIcon name="trash-2" class="w-4 h-4 text-gray-400" />
 						</Button>
 					</div>
+				</div>
+
+				<div class="pt-2">
+					<Button variant="outline" size="sm" @click="addRow">
+						<template #prefix>
+							<FeatherIcon name="plus" class="w-4 h-4" />
+						</template>
+						Add another version
+					</Button>
 				</div>
 			</div>
 		</section>
@@ -190,6 +177,7 @@ import {
 	FeatherIcon,
 	FileUploader,
 	LoadingIndicator,
+	Autocomplete,
 	createResource,
 } from "frappe-ui";
 

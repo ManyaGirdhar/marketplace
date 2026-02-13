@@ -1,35 +1,44 @@
 <template>
 	<div class="space-y-8 animate-in fade-in zoom-in duration-500">
 		<div class="text-center py-10">
-			<h2 class="text-2xl font-bold mb-2 tracking-tight">Technical Validation</h2>
-			<p class="text-gray-400">
+			<h2 class="text-2xl font-bold mb-2 tracking-tight text-gray-900 dark:text-white">
+				Technical Validation
+			</h2>
+			<p class="text-gray-500 dark:text-gray-400">
 				Validating release:
-				<span class="text-white font-mono text-sm">{{ form.app_release }}</span>
+				<span class="font-mono text-sm text-gray-900 dark:text-white">
+					{{ form.app_release }}
+				</span>
+			</p>
+			<p v-if="hash" class="text-xs text-gray-500 mt-2">
+				Commit:
+				<span class="font-mono">{{ hash.substring(0, 7) }}</span>
 			</p>
 		</div>
-		<p v-if="hash" class="text-xs text-gray-600 mt-2">
-			Commit: <span class="font-mono">{{ hash.substring(0, 7) }}</span>
-		</p>
-		<div class="border border-gray-800 rounded-3xl overflow-hidden bg-[#0A0A0A]">
+		<div
+			class="border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden bg-white dark:bg-gray-900"
+		>
 			<div
 				v-for="check in automatedChecks"
 				:key="check.id"
-				class="flex items-center justify-between px-10 py-6 border-b border-gray-800 last:border-0 hover:bg-white/5 transition-colors"
+				class="flex items-center justify-between px-10 py-6 border-b border-gray-200 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
 			>
 				<div class="flex items-center gap-4">
 					<div
 						:class="[
 							check.status === 'running'
-								? 'animate-pulse bg-blue-500 shadow-[0_0_8px_#3b82f6]'
+								? 'animate-pulse bg-blue-500'
 								: check.status === 'pass'
-								? 'bg-green-500 shadow-[0_0_8px_#22c55e]'
+								? 'bg-green-500'
 								: check.status === 'fail'
-								? 'bg-red-500 shadow-[0_0_8px_#ef4444]'
-								: 'bg-gray-700',
+								? 'bg-red-500'
+								: 'bg-gray-300 dark:bg-gray-700',
 							'w-2 h-2 rounded-full transition-all duration-500',
 						]"
 					></div>
-					<span class="font-medium tracking-wide text-gray-200">{{ check.label }}</span>
+					<span class="font-medium text-gray-800 dark:text-gray-200">
+						{{ check.label }}
+					</span>
 				</div>
 
 				<div class="flex items-center gap-3">
@@ -44,27 +53,28 @@
 						name="x-circle"
 						class="w-5 h-5 text-red-500"
 					/>
-					<span v-else class="text-xs text-gray-600 uppercase font-bold tracking-widest"
-						>Waiting</span
-					>
+					<span v-else class="text-xs text-gray-400 uppercase font-bold tracking-widest">
+						Waiting
+					</span>
 				</div>
 			</div>
 		</div>
 
 		<div
 			v-if="ciStatus === 'Failed'"
-			class="mt-4 p-4 bg-red-900/10 border border-red-900/20 rounded-xl"
+			class="mt-4 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl"
 		>
 			<p class="text-xs font-bold text-red-500 uppercase mb-2">Build Logs</p>
-			<pre class="text-xs text-red-300 font-mono whitespace-pre-wrap">{{
-				validationLogs || "No logs available"
-			}}</pre>
+			<pre class="text-xs text-red-600 dark:text-red-300 font-mono whitespace-pre-wrap">
+		{{ validationLogs || "No logs available" }}
+      </pre
+			>
 		</div>
 
 		<div
-			class="mt-12 p-6 border border-gray-800 rounded-2xl bg-black/40 flex items-start gap-4"
+			class="mt-12 p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-gray-50 dark:bg-gray-900 flex items-start gap-4"
 		>
-			<p class="text-sm text-gray-500 leading-relaxed italic">
+			<p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed italic">
 				The validation process checks your hooks.py for required dependencies and executes
 				automated benchmarks. You will be able to proceed once the build completes
 				successfully.
