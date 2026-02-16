@@ -18,7 +18,7 @@
 import { reactive, computed } from "vue";
 import { Sidebar, Breadcrumbs } from "frappe-ui";
 import { useRoute } from "vue-router";
-import { session } from "../data/session";
+import { session } from "../../data/session";
 import { LayoutDashboard, PlusCircle, UserCircle, LogOut, Moon } from "lucide-vue-next";
 
 const route = useRoute();
@@ -81,7 +81,7 @@ const sidebarConfig = reactive({
 				},
 				{
 					label: "Create New App",
-					to: "/dashboard/create-app",
+					to: "/wizard/create-app",
 					icon: PlusCircle,
 				},
 			],

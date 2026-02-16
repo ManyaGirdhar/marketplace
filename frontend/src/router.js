@@ -10,7 +10,7 @@ const publicRoutes = [
 
 const dashboardRoutes = {
 	path: "/dashboard",
-	component: () => import("@/pages/DashboardLayout.vue"),
+	component: () => import("@/pages/layouts/DashboardLayout.vue"),
 	children: [
 		{ path: "", redirect: "/dashboard/my-apps" },
 
@@ -21,19 +21,9 @@ const dashboardRoutes = {
 		},
 		{ name: "MyApps", path: "my-apps", component: () => import("@/pages/MyApps.vue") },
 		{
-			name: "CreateApp",
-			path: "create-app",
-			component: () => import("@/pages/CreateApp.vue"),
-		},
-		{
 			name: "PublisherProfile",
 			path: "publisher-profile",
 			component: () => import("@/pages/PublisherProfile.vue"),
-		},
-		{
-			name: "ManageApp",
-			path: "app/:appName",
-			component: () => import("@/pages/ManageApp.vue"),
 		},
 		{
 			name: "AppDetails",
@@ -44,7 +34,24 @@ const dashboardRoutes = {
 	],
 };
 
-const routes = [...publicRoutes, dashboardRoutes];
+const wizardRoutes = {
+	path: "/wizard",
+	component: () => import("@/pages/layouts/WizardLayout.vue"),
+	children: [
+		{
+			name: "CreateApp",
+			path: "create-app",
+			component: () => import("@/pages/CreateApp.vue"),
+		},
+		{
+			name: "ManageApp",
+			path: "app/:appName",
+			component: () => import("@/pages/ManageApp.vue"),
+		},
+	],
+};
+
+const routes = [...publicRoutes, dashboardRoutes, wizardRoutes];
 const router = createRouter({
 	history: createWebHistory(),
 	routes,
@@ -64,9 +71,9 @@ router.beforeEach(async (to, from, next) => {
 	const isLoggedIn = session.isLoggedIn;
 
 	// 2. Auth Gate
-	const isDashboardRoute = to.path.startsWith("/dashboard");
+	const isProtectedRoute = to.path.startsWith("/dashboard") || to.path.startsWith("/wizard");
 
-	if (isDashboardRoute && !session.isLoggedIn) {
+	if (isProtectedRoute && !session.isLoggedIn) {
 		return next({ name: "Login" });
 	}
 
