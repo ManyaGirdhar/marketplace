@@ -6,14 +6,18 @@
 			<header
 				class="flex items-center justify-between px-8 py-5 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/70 backdrop-blur sticky top-0 z-20"
 			>
-				<div class="space-y-1">
-					<p class="text-xs uppercase tracking-widest text-gray-500">Submit App</p>
+				<div class="space-y-2">
+					<p
+						class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+					>
+						Submit App
+					</p>
 
-					<div class="flex items-center gap-4">
-						<h1 class="text-lg font-semibold truncate max-w-[420px]">
-							{{ form.app_title || "New App" }}
-						</h1>
-					</div>
+					<h1
+						class="text-2xl font-semibold text-gray-900 dark:text-white truncate max-w-[520px]"
+					>
+						{{ form.app_title || "New App" }}
+					</h1>
 				</div>
 
 				<Button
@@ -29,8 +33,8 @@
 
 			<main class="flex-1 overflow-y-auto">
 				<div class="max-w-5xl mx-auto px-8 py-10">
-					<div class="mb-10 flex items-center justify-between">
-						<div class="flex gap-8">
+					<div class="mb-10 flex items-center justify-center">
+						<div class="flex gap-10">
 							<div
 								v-for="(label, index) in ['App Details', 'Validation', 'Review']"
 								:key="label"

@@ -1,17 +1,21 @@
 <template>
 	<div class="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-		<header
-			class="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-		>
-			<div class="flex items-center gap-2">
-				<img src="" class="w-6 h-6" />
-				<span class="font-semibold text-gray-900 dark:text-white"> Marketplace </span>
-			</div>
+		<header class="px-6 pt-6 pb-2 bg-gray-50 dark:bg-gray-950">
+			<div class="max-w-4xl mx-auto flex items-center justify-between">
+				<Button
+					@click="goToDashboard"
+					class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+				>
+					← Back to dashboard
+				</Button>
 
-			<Button variant="ghost" @click="goToDashboard"> Exit </Button>
+				<Button @click="$emit('continue')" v-if="$slots.actions">
+					<slot name="actions" />
+				</Button>
+			</div>
 		</header>
 
-		<main class="flex-1 flex items-start justify-center p-6">
+		<main class="flex-1 flex justify-center px-6 pb-10">
 			<div class="w-full max-w-4xl">
 				<router-view />
 			</div>

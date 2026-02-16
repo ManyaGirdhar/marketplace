@@ -92,6 +92,7 @@ const emit = defineEmits(["validated"]);
 
 const ciStatus = ref("Pending");
 const validationLogs = ref("");
+const hash = ref("");
 let pollInterval = null;
 
 const automatedChecks = computed(() => [
@@ -124,6 +125,7 @@ async function fetchStatus() {
 		if (data) {
 			ciStatus.value = data.ci_status;
 			validationLogs.value = data.validation_logs;
+			hash.value = data.hash || "";
 
 			if (ciStatus.value === "Passed") {
 				emit("validated", true);
