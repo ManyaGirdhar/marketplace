@@ -32,17 +32,15 @@
 			>
 				<template #tab-panel="{ tab }">
 					<div v-if="tab.key === 'releases'" class="p-6 space-y-6">
+						<div v-if="releasesResource.loading" class="flex justify-center py-16">
+							<LoadingIndicator class="w-6 h-6" />
+						</div>
+
 						<div
-							v-if="!releasesResource.loading && releasesResource.data?.length === 0"
+							v-else-if="releasesResource.data?.length === 0"
 							class="text-center py-16 text-gray-500"
 						>
 							No releases yet. Create a new version from the wizard.
-						</div>
-						<div
-							v-else-if="releasesResource.loading"
-							class="flex justify-center py-16"
-						>
-							<LoadingIndicator class="w-6 h-6" />
 						</div>
 						<div v-else class="space-y-4">
 							<Card
@@ -51,27 +49,22 @@
 								class="hover:shadow-md transition"
 							>
 								<div class="flex items-center justify-between">
-									<div class="space-y-1">
-										<p class="font-semibold">
-											{{ release.name }}
-										</p>
-
+									<div>
+										<p class="font-semibold">{{ release.name }}</p>
 										<p class="text-sm text-gray-500">
 											Branch:
 											<span class="font-medium">{{ release.branch }}</span>
 										</p>
-
 										<p class="text-xs text-gray-400">
 											Created
 											{{ new Date(release.creation).toLocaleString() }}
 										</p>
 									</div>
 
-									<div class="flex items-center gap-3">
+									<div class="flex gap-3">
 										<Badge :theme="ciTheme(release.ci_status)">
 											CI {{ release.ci_status }}
 										</Badge>
-
 										<Badge :theme="releaseTheme(release.status)">
 											{{ release.status }}
 										</Badge>
@@ -129,13 +122,11 @@
 						</Card>
 					</div>
 
-					<!-- ⚙️ SETTINGS TAB -->
 					<div v-else-if="tab.key === 'settings'" class="p-6 space-y-6">
-						<!-- Latest Release Status -->
 						<Card title="Latest Release">
-							<div v-if="latestRelease" class="flex items-center justify-between">
+							<div v-if="latestRelease" class="flex justify-between items-center">
 								<div>
-									<p class="font-medium">Release {{ latestRelease.name }}</p>
+									<p class="font-medium">{{ latestRelease.name }}</p>
 									<p class="text-sm text-gray-500">
 										Branch: {{ latestRelease.branch }}
 									</p>
@@ -148,13 +139,10 @@
 
 							<div v-else class="text-gray-500">No release available.</div>
 						</Card>
-
-						<!-- Submit for Review -->
 						<Card title="Submission">
 							<div class="space-y-4">
 								<div class="text-sm text-gray-600">
-									Submit your app to the Marketplace review team. Your latest
-									release must pass CI validation first.
+									Submit your app for Marketplace review. CI must pass first.
 								</div>
 
 								<Button
@@ -166,17 +154,47 @@
 								</Button>
 
 								<p v-if="!canSubmitForReview" class="text-xs text-gray-500">
-									CI must pass before submission is allowed.
+									CI must pass before submission.
 								</p>
 							</div>
 						</Card>
 
-						<!-- Danger Zone -->
 						<Card title="Danger Zone">
-							<div class="text-sm text-red-500">
-								App disabling & deletion will be added in next step.
+							<div class="space-y-4">
+								<p class="text-sm text-gray-600">
+									Deleting your app permanently removes releases and sources.
+								</p>
+
+								<Button
+									variant="solid"
+									theme="red"
+									@click="showDeleteDialog = true"
+								>
+									Delete App Permanently
+								</Button>
 							</div>
 						</Card>
+
+						<Dialog
+							v-model="showDeleteDialog"
+							:options="{
+								title: 'Delete this app permanently?',
+								message: 'This action cannot be undone.',
+								size: 'sm',
+							}"
+						>
+							<template #actions>
+								<Button @click="showDeleteDialog = false">Cancel</Button>
+								<Button
+									variant="solid"
+									theme="red"
+									:loading="deleteAppResource.loading"
+									@click="confirmDeleteApp"
+								>
+									Delete App
+								</Button>
+							</template>
+						</Dialog>
 					</div>
 				</template>
 			</Tabs>
@@ -186,21 +204,16 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
-import { createResource, Card, Badge, Tabs, LoadingIndicator } from "frappe-ui";
+import { useRoute, useRouter } from "vue-router";
+import { createResource, Card, Badge, Tabs, LoadingIndicator, Dialog, Button } from "frappe-ui";
 import { LucideRocket, LucideInfo, LucideSettings } from "lucide-vue-next";
 
 const route = useRoute();
+const router = useRouter();
+
 const app = ref(null);
 const loading = ref(true);
-const latestRelease = computed(() => {
-	return releasesResource.data?.[0] || null;
-});
-
-const canSubmitForReview = computed(() => {
-	return latestRelease.value?.ci_status === "Passed";
-});
-
+const showDeleteDialog = ref(false);
 const activeTabIndex = ref(0);
 
 const tabs = [
@@ -208,18 +221,6 @@ const tabs = [
 	{ label: "Releases", key: "releases", icon: LucideRocket },
 	{ label: "Settings", key: "settings", icon: LucideSettings },
 ];
-
-function statusTheme(status) {
-	const map = {
-		Draft: "gray",
-		"In Review": "orange",
-		Published: "green",
-		"Attention Required": "yellow",
-		Rejected: "red",
-		Disabled: "gray",
-	};
-	return map[status] || "gray";
-}
 
 const appResource = createResource({
 	url: "frappe.client.get_value",
@@ -236,7 +237,6 @@ const appResource = createResource({
 			"url",
 		],
 	},
-	auto: false,
 });
 
 const releasesResource = createResource({
@@ -252,52 +252,35 @@ const releasesResource = createResource({
 
 const submitForReview = createResource({
 	url: "marketplace.api.setup_wizard.finalize_submission",
-	makeParams: (releaseId) => ({
-		app_release_id: releaseId,
-	}),
-	auto: false,
 });
+
+const deleteAppResource = createResource({
+	url: "marketplace.api.setup_wizard.delete_marketplace_app",
+});
+
+const latestRelease = computed(() => releasesResource.data?.[0] || null);
+const canSubmitForReview = computed(() => latestRelease.value?.ci_status === "Passed");
+
 async function handleSubmitForReview() {
-	try {
-		await submitForReview.fetch(latestRelease.value.name);
-
-		await appResource.fetch();
-		await releasesResource.fetch();
-
-		alert("App submitted for review 🚀");
-	} catch (e) {
-		console.error(e);
-		alert("Failed to submit app");
-	}
+	await submitForReview.fetch({ app_release_id: latestRelease.value.name });
+	await appResource.fetch();
+	await releasesResource.fetch();
 }
 
-function ciTheme(status) {
-	const map = {
-		Running: "orange",
-		Passed: "green",
-		Failed: "red",
-	};
-	return map[status] || "gray";
+async function confirmDeleteApp() {
+	await deleteAppResource.fetch({ app_name: app.value.name });
+	showDeleteDialog.value = false;
+	router.push("/dashboard/my-apps");
 }
 
-function releaseTheme(status) {
-	const map = {
-		Draft: "gray",
-		"In Review": "orange",
-		Published: "green",
-		Rejected: "red",
-	};
-	return map[status] || "gray";
-}
+const statusTheme = (s) =>
+	({ Draft: "gray", "In Review": "orange", Published: "green", Rejected: "red" }[s] || "gray");
+const ciTheme = (s) => ({ Running: "orange", Passed: "green", Failed: "red" }[s] || "gray");
+const releaseTheme = (s) =>
+	({ Draft: "gray", "In Review": "orange", Published: "green", Rejected: "red" }[s] || "gray");
 
 onMounted(async () => {
-	try {
-		const res = await appResource.fetch();
-		app.value = res;
-	} catch (err) {
-		console.error(err);
-	} finally {
-		loading.value = false;
-	}
+	app.value = await appResource.fetch();
+	loading.value = false;
 });
 </script>

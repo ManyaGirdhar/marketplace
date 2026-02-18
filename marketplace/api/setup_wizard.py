@@ -226,3 +226,24 @@ def finalize_submission(app_release_id: str):
 		frappe.db.set_value("Marketplace App", mkt_app_name, "status", "Pending Review")
 
 	return {"status": "success"}
+
+
+@frappe.whitelist()
+def delete_marketplace_app(app_name: str):
+	user = frappe.session.user
+
+	publisher = frappe.db.get_value("Marketplace Publisher", {"user": user}, "name")
+	if not publisher:
+		frappe.throw(_("Publisher profile not found"))
+
+	app = frappe.get_doc("Marketplace App", app_name)
+	if app.publisher != publisher:
+		frappe.throw(_("You are not allowed to delete this app"))
+
+	frappe.db.delete("App Release", {"app": app.app})
+	frappe.db.delete("App Source", {"app": app.app})
+	frappe.db.delete("App", {"title": app.app})
+
+	frappe.delete_doc("Marketplace App", app.name, ignore_permissions=True)
+
+	return {"status": "deleted"}
