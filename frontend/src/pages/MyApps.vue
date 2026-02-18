@@ -1,48 +1,60 @@
 <template>
 	<div>
+		<div v-if="appsResource.loading" class="h-[60vh] flex items-center justify-center">
+			<LoadingIndicator class="w-8 h-8" />
+		</div>
+
 		<div
-			v-if="appsResource.data && appsResource.data.length > 0"
+			v-else-if="appsResource.data && appsResource.data.length"
 			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
 		>
-			<div
+			<Card
 				v-for="app in appsResource.data"
 				:key="app.name"
-				class="p-6 bg-white border rounded-xl hover:shadow-md transition"
+				class="cursor-pointer hover:shadow-md transition p-5"
+				@click="goToApp(app.app)"
 			>
-				<h3 class="text-xl font-semibold mb-2">{{ app.app }}</h3>
+				<div class="flex flex-col gap-4">
+					<div class="flex items-start justify-between">
+						<h3 class="text-lg font-semibold truncate">
+							{{ app.app }}
+						</h3>
 
-				<span class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded">
-					{{ app.status }}
-				</span>
+						<Badge :theme="getStatusTheme(app.status)">
+							{{ app.status }}
+						</Badge>
+					</div>
 
-				<div class="mt-4 flex justify-end">
-					<router-link
-						:to="{ name: 'AppDetails', params: { app_name: app.app } }"
-						class="text-sm text-blue-600 hover:underline"
-					>
-						Manage →
-					</router-link>
+					<div class="flex justify-end">
+						<span class="text-sm text-blue-600 hover:underline"> Manage → </span>
+					</div>
 				</div>
-			</div>
+			</Card>
 		</div>
 
-		<div
-			v-else-if="!appsResource.loading"
-			class="h-[60vh] flex flex-col items-center justify-center gap-6"
-		>
-			<p class="text-gray-500 text-lg">No apps listed yet</p>
+		<div v-else class="h-[65vh] flex items-center justify-center">
+			<Card class="max-w-md text-center">
+				<template #content>
+					<div class="py-6 flex flex-col items-center gap-4">
+						<div class="text-4xl">📦</div>
 
-			<Button @click="goToCreateApp">Create your first app</Button>
-		</div>
+						<div>
+							<h2 class="text-lg font-semibold">No apps yet</h2>
+							<p class="text-sm text-gray-500 mt-1">
+								Create your first Marketplace app to get started.
+							</p>
+						</div>
 
-		<div v-else class="h-[60vh] flex items-center justify-center">
-			<LoadingIndicator class="w-8 h-8" />
+						<Button @click="goToCreateApp"> Create App </Button>
+					</div>
+				</template>
+			</Card>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { createListResource, Button, LoadingIndicator } from "frappe-ui";
+import { createListResource, Button, LoadingIndicator, Card, Badge } from "frappe-ui";
 import { useRouter } from "vue-router";
 import { session } from "@/data/session";
 
@@ -57,5 +69,22 @@ const appsResource = createListResource({
 
 function goToCreateApp() {
 	router.push({ name: "CreateApp" });
+}
+
+function goToApp(appName) {
+	router.push({ name: "AppDetails", params: { app_name: appName } });
+}
+
+function getStatusTheme(status) {
+	const map = {
+		Draft: "gray",
+		Published: "green",
+		"In Review": "blue",
+		"Attention Required": "orange",
+		Rejected: "red",
+		Disabled: "gray",
+	};
+
+	return map[status] || "gray";
 }
 </script>

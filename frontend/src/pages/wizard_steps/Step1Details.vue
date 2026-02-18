@@ -148,8 +148,11 @@
 							placeholder="Search branch"
 							:loading="loadingMeta"
 						/>
-						<Button variant="ghost" size="sm" @click="removeRow(index)">
-							<FeatherIcon name="trash-2" class="w-4 h-4 text-gray-400" />
+						<Button variant="ghost" size="sm" @click="askRemove(index)">
+							<FeatherIcon
+								name="trash-2"
+								class="w-4 h-4 text-red-500 hover:text-red-600"
+							/>
 						</Button>
 					</div>
 				</div>
@@ -165,10 +168,25 @@
 			</div>
 		</section>
 	</div>
+
+	<Dialog
+		v-model="showDeleteDialog"
+		:options="{
+			title: 'Delete version mapping?',
+			message: 'This compatibility mapping will be permanently removed.',
+			size: 'sm',
+		}"
+	>
+		<template #actions>
+			<Button variant="ghost" @click="showDeleteDialog = false"> Cancel </Button>
+
+			<Button variant="solid" theme="red" @click="removeRowConfirmed"> Delete </Button>
+		</template>
+	</Dialog>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import {
 	TextInput,
 	Select,
@@ -179,7 +197,11 @@ import {
 	LoadingIndicator,
 	Autocomplete,
 	createResource,
+	Dialog,
 } from "frappe-ui";
+
+const showDeleteDialog = ref(false);
+const rowToDelete = ref(null);
 
 const props = defineProps(["form", "branches", "dependencies", "loadingMeta"]);
 
@@ -208,7 +230,13 @@ function addRow() {
 	props.form.versions.push({ version: "", branch: "" });
 }
 
-function removeRow(index) {
-	props.form.versions.splice(index, 1);
+function askRemove(index) {
+	rowToDelete.value = index;
+	showDeleteDialog.value = true;
+}
+
+function removeRowConfirmed() {
+	props.form.versions.splice(rowToDelete.value, 1);
+	showDeleteDialog.value = false;
 }
 </script>

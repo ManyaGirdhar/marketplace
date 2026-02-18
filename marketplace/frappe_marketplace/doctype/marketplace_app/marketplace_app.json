@@ -14,6 +14,7 @@
   "column_break_3",
   "publisher",
   "route",
+  "url",
   "published_on",
   "section_break_7",
   "categories",
@@ -192,6 +193,11 @@
    "fieldtype": "Table",
    "label": "Sources",
    "options": "Marketplace App Version"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "Repository URL"
   }
  ],
  "grid_page_length": 50,
@@ -200,7 +206,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2026-02-04 17:00:31.419337",
+ "modified": "2026-02-17 17:29:45.568490",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "Marketplace App",

@@ -1,13 +1,11 @@
 <template>
-	<div class="flex h-screen w-screen overflow-hidden bg-white dark:bg-gray-950">
+	<div class="flex h-screen w-screen overflow-hidden bg-gray-100 dark:bg-gray-950">
 		<Sidebar :header="sidebarConfig.header" :sections="sidebarConfig.sections" />
-		<div class="flex flex-1 flex-col overflow-auto">
-			<header
-				class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-5 py-3"
-			>
+		<div class="flex flex-1 flex-col overflow-hidden bg-white dark:bg-gray-900">
+			<header class="border-b border-gray-200 dark:border-gray-800 px-5 py-3">
 				<Breadcrumbs :items="breadcrumbItems" />
 			</header>
-			<main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-950">
+			<main class="flex-1 overflow-y-auto p-6">
 				<router-view />
 			</main>
 		</div>
@@ -15,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue";
-import { Sidebar, Breadcrumbs } from "frappe-ui";
+import { reactive, computed, ref, onMounted } from "vue";
+import { Sidebar, Breadcrumbs, createResource } from "frappe-ui";
 import { useRoute } from "vue-router";
 import { session } from "../../data/session";
 import { LayoutDashboard, PlusCircle, UserCircle, LogOut, Moon } from "lucide-vue-next";
@@ -52,10 +50,33 @@ function toggleTheme() {
 	document.documentElement.setAttribute("data-theme", newTheme);
 }
 
+const publisherName = ref("Publisher");
+const publisherResource = createResource({
+	url: "frappe.client.get_value",
+	params: {
+		doctype: "Marketplace Publisher",
+		filters: { user: session.user },
+		fieldname: ["publisher_name"],
+	},
+	auto: false,
+});
+
+onMounted(async () => {
+	try {
+		const res = await publisherResource.fetch();
+		if (res?.publisher_name) {
+			publisherName.value = res.publisher_name;
+			sidebarConfig.header.subtitle = res.publisher_name;
+		}
+	} catch (e) {
+		console.error("Failed to fetch publisher", e);
+	}
+});
+
 const sidebarConfig = reactive({
 	header: {
 		title: "Marketplace",
-		subtitle: session.user || "Publisher",
+		subtitle: publisherName.value,
 		logo: "",
 		menuItems: [
 			{

@@ -72,6 +72,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 			"status": "Draft",
 			"publisher": publisher,
 			"long_description": _("Fetching README from GitHub..."),
+			"url": repo_data.get("html_url") or repo_full_url,
 		}
 	)
 

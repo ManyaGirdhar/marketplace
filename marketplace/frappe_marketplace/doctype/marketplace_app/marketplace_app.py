@@ -41,6 +41,7 @@ class MarketplaceApp(WebsiteGenerator):
 		support: DF.Data | None
 		terms_of_service: DF.Data | None
 		title: DF.Data
+		url: DF.Data | None
 		website: DF.Data | None
 	# end: auto-generated types
 
