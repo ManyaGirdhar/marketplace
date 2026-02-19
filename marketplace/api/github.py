@@ -209,7 +209,7 @@ def extract_toml_metadata(toml_str, fallback_name):
     }
 
 @frappe.whitelist()
-def check_version_compatibility(required_range, user_version):
+def check_version_compatibility(required_range: str, user_version: str):
     """Validates user version against the required range."""
     if not required_range:
         return True
