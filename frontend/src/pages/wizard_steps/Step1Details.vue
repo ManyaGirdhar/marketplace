@@ -40,6 +40,16 @@
 								Detected Dependencies
 							</p>
 						</div>
+						<div
+							v-if="frappeRequirement"
+							class="mt-4 flex items-start gap-2 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg border border-blue-100 dark:border-blue-800"
+						>
+							<FeatherIcon name="info" class="w-3.5 h-3.5 mt-0.5" />
+							<div>
+								<p class="font-semibold">TOML Requirement Detected:</p>
+								<p>This app specifies Frappe {{ frappeRequirement }}.</p>
+							</div>
+						</div>
 
 						<div class="flex flex-wrap gap-2">
 							<Badge v-for="app in dependencies" :key="app">
@@ -51,7 +61,7 @@
 								class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
 							>
 								<LoadingIndicator class="w-4 h-4" />
-								Scanning hooks.py…
+								Scanning pyproject.toml…
 							</div>
 
 							<div
@@ -203,7 +213,13 @@ import {
 const showDeleteDialog = ref(false);
 const rowToDelete = ref(null);
 
-const props = defineProps(["form", "branches", "dependencies", "loadingMeta"]);
+const props = defineProps([
+	"form",
+	"branches",
+	"dependencies",
+	"loadingMeta",
+	"frappeRequirement",
+]);
 
 const branchOptions = computed(() => props.branches.map((b) => ({ label: b, value: b })));
 
