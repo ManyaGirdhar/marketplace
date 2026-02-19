@@ -42,9 +42,15 @@ def initialize_app_step_1(form_data: str, repo_data: dict | None = None):
 
 
 def _process_app_initialization(data, repo_data, app_title, publisher):
-	repo_full_url = data.get("repo_url") or repo_data.get("html_url")
-	repo_owner = repo_data.get("owner", {}).get("login")
-	repo_name = repo_data.get("name")
+	repo_data = repo_data or {}
+	repo_full_url = str(data.get("repo_url") or repo_data.get("html_url") or "")
+	repo_owner = str(
+		repo_data.get("owner", {}).get("login")
+		if isinstance(repo_data.get("owner"), dict)
+		else repo_data.get("owner") or ""
+	)
+	repo_name = str(repo_data.get("name") or "")
+	app_title = str(app_title)
 
 	if not frappe.db.exists("App", app_title):
 		frappe.get_doc(
@@ -57,7 +63,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 				"repo": repo_name,
 				"enabled": 1,
 				"frappe": 1,
-				"branch": repo_data.get("default_branch"),
+				"branch": str(repo_data.get("default_branch") or "main"),
 				"publisher": publisher,
 			}
 		).insert(ignore_permissions=True)
@@ -67,32 +73,38 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 			"doctype": "Marketplace App",
 			"app": app_title,
 			"title": app_title,
-			"description": data.get("description") or repo_data.get("description"),
+			"description": str(data.get("description") or repo_data.get("description") or ""),
 			"image": data.get("logo"),
 			"status": "Draft",
 			"publisher": publisher,
 			"long_description": _("Fetching README from GitHub..."),
-			"url": repo_data.get("html_url") or repo_full_url,
+			"url": str(repo_data.get("html_url") or repo_full_url),
 		}
 	)
-
-	last_release_name = None
 
 	versions = data.get("versions", [])
 	if not versions:
 		frappe.throw(_("At least one version/branch must be selected."))
 
+	last_release_name = None
+
 	for v in versions:
 		version_num = v.get("version")
-		selected_branch = v.get("branch")
+		selected_branch = v.get("branch") or "main"
+
+		raw_full_name = repo_data.get("full_name")
+		if isinstance(raw_full_name, dict) or not raw_full_name:
+			repo_full_name = f"{repo_owner}/{repo_name}"
+		else:
+			repo_full_name = str(raw_full_name)
 
 		source_doc = frappe.get_doc(
 			{
 				"doctype": "App Source",
 				"app": app_title,
 				"repository_url": repo_full_url,
-				"branch": selected_branch,
-				"github_repo_full_name": repo_data.get("full_name") or f"{repo_owner}/{repo_name}",
+				"branch": str(selected_branch),
+				"github_repo_full_name": repo_full_name,
 				"public": 1,
 			}
 		).insert(ignore_permissions=True)
@@ -102,7 +114,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 				"doctype": "App Release",
 				"app": app_title,
 				"source": source_doc.name,
-				"branch": selected_branch,
+				"branch": str(selected_branch),
 				"status": "Draft",
 				"ci_status": "Running",
 				"publisher": publisher,
@@ -117,7 +129,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 			"marketplace.api.setup_wizard.run_background_tasks",
 			release_name=release_doc.name,
 			source_name=source_doc.name,
-			repo_full_name=repo_data.get("full_name") or f"{repo_owner}/{repo_name}",
+			repo_full_name=repo_full_name,
 			mkt_app_name=app_title,
 			now=frappe.flags.in_test,
 		)
