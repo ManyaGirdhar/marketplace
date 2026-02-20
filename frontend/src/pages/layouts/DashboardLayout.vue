@@ -87,7 +87,7 @@ const sidebarConfig = reactive({
 			{
 				label: "Logout",
 				icon: LogOut,
-				onClick: () => session.logout(),
+				onClick: () => session.logout.submit(),
 			},
 		],
 	},

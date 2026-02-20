@@ -48,7 +48,8 @@ def get_github_login_url():
 
 @frappe.whitelist(allow_guest=True) # nosemgrep
 def get_github_auth_url():
-    success_uri = "http://newmktplace.localhost:8080/publishersetup"
+    frontend_url = frappe.conf.get("frontend_url") or frappe.utils.get_url()
+    success_uri = f"{frontend_url}/publishersetup"
     connected_app = get_connected_app()
     return connected_app.initiate_web_application_flow(success_uri=success_uri)
 

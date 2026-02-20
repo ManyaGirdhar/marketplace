@@ -69,7 +69,7 @@ website_route_rules = [
 # role_home_page = {
 # 	"Role": "home_page"
 # }
-
+role_home_page = {"Marketplace Publisher": "/dashboard"}
 # Generators
 # ----------
 
