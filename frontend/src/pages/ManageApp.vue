@@ -276,12 +276,20 @@ async function initializeApp() {
 		});
 		form.app_release_id = res.app_release;
 		return true;
-	} catch (error) {
-		console.error(error);
+	} catch (error: any) {
+		console.error("Initialization Error:", error);
+		let errorMessage = "An error occurred while creating the app record.";
+
+		if (error.messages && error.messages.length > 0) {
+			errorMessage = error.messages[0];
+		} else if (error.message) {
+			errorMessage = error.message;
+		}
+		validationError.value = errorMessage;
+
 		return false;
 	}
 }
-
 function handleValidationUpdate(status: boolean) {
 	validationPassed.value = status;
 }
