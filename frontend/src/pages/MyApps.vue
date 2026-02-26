@@ -1,90 +1,121 @@
 <template>
-	<div>
-		<div v-if="appsResource.loading" class="h-[60vh] flex items-center justify-center">
-			<LoadingIndicator class="w-8 h-8" />
+	<div class="bg-white rounded-lg border border-gray-200 p-4">
+		<div class="flex items-center justify-between mb-4">
+			<h2 class="text-lg font-semibold text-gray-800">My Apps</h2>
+
+			<Button variant="solid" @click="goToSetup"> Create New App </Button>
 		</div>
 
-		<div
-			v-else-if="appsResource.data && appsResource.data.length"
-			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+		<ListView
+			:columns="columns"
+			:rows="appsResource.data || []"
+			row-key="name"
+			:options="{
+				selectable: false,
+				resizeColumn: true,
+				showTooltip: true,
+			}"
 		>
-			<Card
-				v-for="app in appsResource.data"
-				:key="app.name"
-				class="cursor-pointer hover:shadow-md transition p-5"
-				@click="goToApp(app.app)"
-			>
-				<div class="flex flex-col gap-4">
-					<div class="flex items-start justify-between">
-						<h3 class="text-lg font-semibold truncate">
-							{{ app.app }}
-						</h3>
+			<ListHeader>
+				<ListHeaderItem v-for="column in columns" :key="column.key" :item="column">
+					<template #prefix="{ item }">
+						<component :is="item.icon" class="size-4" />
+					</template>
+				</ListHeaderItem>
+			</ListHeader>
 
-						<Badge :theme="getStatusTheme(app.status)">
-							{{ app.status }}
-						</Badge>
-					</div>
+			<ListRows>
+				<ListRow
+					v-for="row in appsResource.data"
+					:key="row.name"
+					:row="row"
+					class="cursor-pointer hover:bg-gray-50 transition"
+					@click="goToApp(row)"
+					v-slot="{ column, item }"
+				>
+					<ListRowItem>
+						<!-- STATUS COLUMN -->
+						<template v-if="column.key === 'status'">
+							<div class="flex items-center gap-2">
+								<div class="h-3 w-3 rounded-full" :class="item.bg_color" />
+								<span class="text-sm text-gray-700">
+									{{ item.label }}
+								</span>
+							</div>
+						</template>
 
-					<div class="flex justify-end">
-						<span class="text-sm text-blue-600 hover:underline"> Manage → </span>
-					</div>
-				</div>
-			</Card>
-		</div>
+						<template v-else>
+							{{ item }}
+						</template>
+					</ListRowItem>
+				</ListRow>
+			</ListRows>
 
-		<div v-else class="h-[65vh] flex items-center justify-center">
-			<Card class="max-w-md text-center">
-				<template #content>
-					<div class="py-6 flex flex-col items-center gap-4">
-						<div class="text-4xl">📦</div>
-
-						<div>
-							<h2 class="text-lg font-semibold">No apps yet</h2>
-							<p class="text-sm text-gray-500 mt-1">
-								Create your first Marketplace app to get started.
-							</p>
-						</div>
-
-						<Button @click="goToCreateApp"> Create App </Button>
-					</div>
-				</template>
-			</Card>
-		</div>
+			<template #empty-state>
+				<div class="text-center py-10 text-gray-500">No apps found.</div>
+			</template>
+		</ListView>
 	</div>
 </template>
 
 <script setup>
-import { createListResource, Button, LoadingIndicator, Card, Badge } from "frappe-ui";
+import { reactive } from "vue";
+import { createListResource } from "frappe-ui";
 import { useRouter } from "vue-router";
-import { session } from "@/data/session";
 
 const router = useRouter();
+
+import {
+	ListHeader,
+	ListHeaderItem,
+	ListRow,
+	ListRowItem,
+	ListRows,
+	ListView,
+	Button,
+} from "frappe-ui";
+
+import LucidePackage from "~icons/lucide/package";
+import LucideCheckCircle from "~icons/lucide/check-circle";
+
+const columns = reactive([
+	{ label: "App Name", key: "app", icon: LucidePackage },
+	{ label: "Status", key: "status", icon: LucideCheckCircle },
+]);
+
+function getStatusBg(status) {
+	const map = {
+		Draft: "bg-surface-gray-4",
+		Published: "bg-surface-green-3",
+		"In Review": "bg-surface-blue-3",
+		"Attention Required": "bg-surface-orange-3",
+		Rejected: "bg-surface-red-4",
+		Disabled: "bg-surface-gray-5",
+	};
+
+	return map[status] || "bg-surface-gray-4";
+}
 
 const appsResource = createListResource({
 	doctype: "Marketplace App",
 	fields: ["name", "app", "status"],
-	filters: { owner: session.user },
 	auto: true,
+	transform(data) {
+		return data.map((app) => ({
+			...app,
+			status: {
+				label: app.status,
+				bg_color: getStatusBg(app.status),
+			},
+		}));
+	},
 });
 
-function goToCreateApp() {
-	router.push({ name: "CreateApp" });
+function goToApp(row) {
+	router.push(`/dashboard/my-apps/${row.name}`);
 }
 
-function goToApp(appName) {
-	router.push({ name: "AppDetails", params: { app_name: appName } });
-}
-
-function getStatusTheme(status) {
-	const map = {
-		Draft: "gray",
-		Published: "green",
-		"In Review": "blue",
-		"Attention Required": "orange",
-		Rejected: "red",
-		Disabled: "gray",
-	};
-
-	return map[status] || "gray";
+function goToSetup() {
+	router.push("/dashboard/create-app");
 }
 </script>
