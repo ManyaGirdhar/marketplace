@@ -102,7 +102,7 @@ const sidebarConfig = reactive({
 				},
 				{
 					label: "Create New App",
-					to: "/wizard/create-app",
+					to: "/dashboard/create-app",
 					icon: PlusCircle,
 				},
 			],
