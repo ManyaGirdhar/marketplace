@@ -22,22 +22,47 @@ import { LayoutDashboard, PlusCircle, UserCircle, LogOut, Moon } from "lucide-vu
 const route = useRoute();
 
 const breadcrumbItems = computed(() => {
-	const items = [{ label: "App Dashboard", route: { name: "MyApps" } }];
-
-	if (route.name === "ManageApp") {
-		items.push({
-			label: String(route.params.appName ?? "App"),
+	const items: { label: string; route: { name: string; params?: any } }[] = [
+		{
+			label: "App Dashboard",
 			route: { name: "MyApps" },
+		},
+	];
+
+	if (route.name === "MyApps") {
+		items.push({
+			label: "My Apps",
+			route: { name: "MyApps" },
+		});
+	} else if (route.name === "AppDetails") {
+		items.push({
+			label: "My Apps",
+			route: { name: "MyApps" },
+		});
+
+		items.push({
+			label: String(route.params.app_name ?? "App"),
+			route: {
+				name: "AppDetails",
+				params: { app_name: route.params.app_name },
+			},
 		});
 	} else if (route.name === "CreateApp") {
 		items.push({
 			label: "Create App",
 			route: { name: "CreateApp" },
 		});
-	} else if (route.name === "PublisherProfile") {
+	} else if (route.name === "ManageApp") {
 		items.push({
-			label: "Publisher Profile",
-			route: { name: "PublisherProfile" },
+			label: "Create App",
+			route: { name: "CreateApp" },
+		});
+		items.push({
+			label: String(route.params.appName ?? "Repository"),
+			route: {
+				name: "ManageApp",
+				params: { appName: route.params.appName },
+			},
 		});
 	}
 
