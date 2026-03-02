@@ -206,7 +206,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2026-02-17 17:29:45.568490",
+ "modified": "2026-02-27 18:57:34.262627",
  "modified_by": "Administrator",
  "module": "Frappe Marketplace",
  "name": "Marketplace App",
@@ -264,6 +264,6 @@
    "title": "Published"
   }
  ],
- "title_field": "title",
+ "title_field": "app",
  "track_changes": 1
 }

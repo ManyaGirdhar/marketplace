@@ -27,21 +27,21 @@ def initialize_app_step_1(form_data: str, repo_data: dict | None = None):
 		if not publisher:
 			frappe.throw(_("Publisher profile not found. Please complete setup first."))
 
-		app_title = data.get("app_title")
-		if not app_title:
-			frappe.throw(_("App Title is required."))
+		app_name = data.get("app_name")
+		if not app_name:
+			frappe.throw(_("App Name is required."))
 
-		if frappe.db.exists("Marketplace App", {"app": app_title}):
-			frappe.throw(_("This app title '{0}' is already submitted to the Marketplace").format(app_title))
+		if frappe.db.exists("Marketplace App", {"app": app_name}):
+			frappe.throw(_("This app name '{0}' is already submitted to the Marketplace").format(app_name))
 
-		return _process_app_initialization(data, repo_data, app_title, publisher)
+		return _process_app_initialization(data, repo_data, app_name, publisher)
 
 	except Exception as e:
 		frappe.log_error(title="Marketplace Error: initialize_app_step_1", message=frappe.get_traceback())
 		raise e
 
 
-def _process_app_initialization(data, repo_data, app_title, publisher):
+def _process_app_initialization(data, repo_data, app_name, publisher):
 	repo_data = repo_data or {}
 	repo_full_url = str(data.get("repo_url") or repo_data.get("html_url") or "")
 	repo_owner = str(
@@ -50,14 +50,15 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 		else repo_data.get("owner") or ""
 	)
 	repo_name = str(repo_data.get("name") or "")
-	app_title = str(app_title)
+	app_name = data.get("app_name")
+	app_title = data.get("app_title")
 
-	if not frappe.db.exists("App", app_title):
+	if not frappe.db.exists("App", app_name):
 		frappe.get_doc(
 			{
 				"doctype": "App",
 				"title": app_title,
-				"app_name": repo_name,
+				"app_name": app_name,
 				"url": repo_full_url,
 				"repo_owner": repo_owner,
 				"repo": repo_name,
@@ -71,7 +72,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 	mkt_app = frappe.get_doc(
 		{
 			"doctype": "Marketplace App",
-			"app": app_title,
+			"app": app_name,
 			"title": app_title,
 			"description": str(data.get("description") or repo_data.get("description") or ""),
 			"image": data.get("logo"),
@@ -101,7 +102,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 		source_doc = frappe.get_doc(
 			{
 				"doctype": "App Source",
-				"app": app_title,
+				"app": app_name,
 				"repository_url": repo_full_url,
 				"branch": str(selected_branch),
 				"github_repo_full_name": repo_full_name,
@@ -112,7 +113,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 		release_doc = frappe.get_doc(
 			{
 				"doctype": "App Release",
-				"app": app_title,
+				"app": app_name,
 				"source": source_doc.name,
 				"branch": str(selected_branch),
 				"status": "Draft",
@@ -130,7 +131,7 @@ def _process_app_initialization(data, repo_data, app_title, publisher):
 			release_name=release_doc.name,
 			source_name=source_doc.name,
 			repo_full_name=repo_full_name,
-			mkt_app_name=app_title,
+			mkt_app_name=app_name,
 			now=frappe.flags.in_test,
 		)
 

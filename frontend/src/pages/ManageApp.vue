@@ -96,9 +96,12 @@
 							<span class="text-lg">⚠️</span>
 							{{ validationError }}
 						</div>
+						<div v-if="repoMeta.loading" class="text-center py-12">
+							Loading repository details...
+						</div>
 
 						<Step1Details
-							v-if="currentStep === 1"
+							v-if="currentStep === 1 && !repoMeta.loading"
 							:form="form"
 							:branches="repoMeta.branches"
 							:dependencies="repoMeta.dependencies"
@@ -181,6 +184,7 @@ onMounted(async () => {
 			form.app_name = data.metadata.app_name || form.app_name;
 			form.app_title = data.metadata.app_title || form.app_title;
 			form.description = data.metadata.app_description || form.description;
+
 			repoMeta.frappe_requirement = data.metadata.frappe_version_requirement;
 		}
 		if (data.default_branch) form.versions[0].branch = data.default_branch;

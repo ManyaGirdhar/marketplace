@@ -5,6 +5,7 @@ import tomllib
 from packaging import specifiers
 import requests
 from frappe import _
+from packaging.version import Version
 from frappe.utils.oauth import get_oauth2_authorize_url
 
 # Helpers
@@ -115,31 +116,38 @@ def fetch_repo_info(repo_url: str):
     owner, repo_name = parts[-2], parts[-1]
     headers = get_github_headers()
 
-    default_branch, branches = get_repo_and_branches(owner, repo_name, headers)
-
-    repo_res = requests.get(f"https://api.github.com/repos/{owner}/{repo_name}", headers=headers)
-    raw_github_data = repo_res.json() if repo_res.status_code == 200 else {}
+    default_branch, branches, raw_github_data = get_repo_and_branches(owner, repo_name, headers)
 
     toml_str = fetch_toml_content(owner, repo_name, headers)
 
+    repo_description = raw_github_data.get("description", "")
+    toml_metadata = {}
     if toml_str:
-        metadata = extract_toml_metadata(toml_str, repo_name)
-    else:
-        metadata = {
-            "app_name": repo_name,
-            "app_title": repo_name.replace("_", " ").title(),
-            "app_description": raw_github_data.get("description", ""),
-            "dependencies": [],
-            "frappe_version_requirement": None
-        }
+        toml_metadata = extract_toml_metadata(toml_str, repo_name) or {}
+
+    metadata = {
+        "app_name": toml_metadata.get("app_name") or repo_name,
+        "app_title": (
+            toml_metadata.get("app_title")
+            or repo_name
+        ),
+        "app_description": (
+            toml_metadata.get("app_description")
+            or repo_description
+            or ""
+        ),
+        "dependencies": toml_metadata.get("dependencies") or [],
+        "frappe_version_requirement": (
+            toml_metadata.get("frappe_version_requirement")
+            or ">=15.0.0,<16.0.0"
+        ),
+    }
 
     if not metadata.get("frappe_version_requirement"):
         metadata["frappe_version_requirement"] = ">=15.0.0,<16.0.0"
 
-        if not metadata.get("dependencies"):
-            metadata["dependencies"] = ["requests", "stripe"]
-
-        frappe.log_error("Marketplace Debug", f"Mocking Frappe requirement for {repo_name}")
+    if not metadata.get("dependencies"):
+        metadata["dependencies"] = []
 
     return {
         "branches": branches,
@@ -158,18 +166,16 @@ def get_repo_and_branches(owner, repo_name, headers):
         headers=headers
     )
 
-    default_branch = "main"
-    if repo_res.status_code == 200:
-        default_branch = repo_res.json().get("default_branch", "main")
+    raw_repo_data = repo_res.json() if repo_res.status_code == 200 else {}
+    default_branch = raw_repo_data.get("default_branch", "main")
 
     branches = []
     if branches_res.status_code == 200:
         branches = [b["name"] for b in branches_res.json()]
 
-    return default_branch, branches
+    return default_branch, branches, raw_repo_data
 
 def fetch_toml_content(owner, repo_name, headers):
-    """Fetches pyproject.toml from GitHub root."""
     res = requests.get(
         f"https://api.github.com/repos/{owner}/{repo_name}/contents/pyproject.toml",
         headers=headers,
@@ -180,44 +186,52 @@ def fetch_toml_content(owner, repo_name, headers):
     return base64.b64decode(res.json()["content"]).decode("utf-8")
 
 def extract_toml_metadata(toml_str, fallback_name):
-    """Extracts project info and Frappe version requirements."""
     try:
         data = tomllib.loads(toml_str)
     except Exception:
         frappe.log_error(title="TOML Parse Failure", message=frappe.get_traceback())
-        return None
-
-    bench_tool = data.get("tool", {}).get("bench", {})
-
-    frappe_req = (
-        bench_tool.get("frappe-dependencies", {}).get("frappe") or 
-        bench_tool.get("frappe_dependencies", {}).get("frappe")
-    )
-
-    if not frappe_req:
-        for value in bench_tool.values():
-            if isinstance(value, dict) and "frappe" in value:
-                frappe_req = value.get("frappe")
-                break
+        return {}
 
     project = data.get("project", {})
-    return {
+    dependencies = project.get("dependencies", [])
+
+    frappe_req = None
+    for dep in dependencies:
+        if dep.lower().startswith("frappe"):
+            match = re.match(r"frappe\s*([<>=!~].+)", dep, re.IGNORECASE)
+            if match:
+                frappe_req = match.group(1)
+            break
+
+    if not frappe_req:
+        bench_tool = data.get("tool", {}).get("bench", {})
+        frappe_req = (
+            bench_tool.get("frappe-dependencies", {}).get("frappe") or
+            bench_tool.get("frappe_dependencies", {}).get("frappe")
+        )
+
+    result = {
         "app_name": project.get("name", fallback_name),
-        "app_title": project.get("name", fallback_name).replace("_", " ").replace("-", " ").title(),
+        "app_title": project.get("name", fallback_name),
         "app_description": project.get("description", ""),
-        "dependencies": project.get("dependencies", []),
+        "dependencies": dependencies,
         "frappe_version_requirement": frappe_req,
     }
 
+    return result
+
 @frappe.whitelist()
 def check_version_compatibility(required_range: str, user_version: str):
-    """Validates user version against the required range."""
     if not required_range:
         return True
 
     try:
         spec = specifiers.SpecifierSet(required_range)
-        return str(user_version) in spec
+        version = Version(user_version)
+        return version in spec
     except Exception:
-        frappe.log_error(title="Version Check Exception", message=frappe.get_traceback())
+        frappe.log_error(
+            title="Version Check Exception",
+            message=frappe.get_traceback()
+        )
         return False

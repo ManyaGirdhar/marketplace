@@ -5,26 +5,41 @@
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 				<div class="space-y-6">
-					<TextInput
-						label="App Title"
-						v-model="form.app_title"
-						placeholder="e.g. Airplane Mode"
-						description="Public name shown on Marketplace"
-					/>
+					<div class="space-y-1">
+						<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+							App Name (Internal / DocName)
+						</label>
 
-					<TextInput
-						label="App Name"
-						v-model="form.app_name"
-						variant="read-only"
-						description="Derived from repository (immutable)"
-					/>
+						<TextInput v-model="form.app_name" variant="read-only" disabled />
 
-					<TextInput
-						label="Repository URL"
-						v-model="form.repo_url"
-						variant="read-only"
-						description="Used to fetch branches and metadata"
-					/>
+						<p class="text-xs text-gray-500 dark:text-gray-400">
+							System identifier used as DocName. Cannot be changed after creation.
+						</p>
+					</div>
+
+					<div class="space-y-1">
+						<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+							App Title (Display Name)
+						</label>
+
+						<TextInput v-model="form.app_title" placeholder="e.g. Airplane Mode" />
+
+						<p class="text-xs text-gray-500 dark:text-gray-400">
+							This is the public display name. You can change this anytime.
+						</p>
+					</div>
+
+					<div class="space-y-1">
+						<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+							Repository URL
+						</label>
+
+						<TextInput v-model="form.repo_url" variant="read-only" />
+
+						<p class="text-xs text-gray-500 dark:text-gray-400">
+							Used to fetch branches and metadata
+						</p>
+					</div>
 				</div>
 
 				<div class="space-y-6">
@@ -51,7 +66,7 @@
 							</div>
 						</div>
 
-						<div class="flex flex-wrap gap-2">
+						<div class="flex flex-wrap gap-2 mt-4">
 							<Badge v-for="app in dependencies" :key="app">
 								{{ app }}
 							</Badge>
