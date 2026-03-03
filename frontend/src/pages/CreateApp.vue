@@ -49,18 +49,6 @@ const columns = [
 		width: 3,
 		getLabel: ({ row }) => row.name,
 	},
-	{
-		label: "Language",
-		key: "language",
-		width: "140px",
-		getLabel: ({ row }) => row.language || "-",
-	},
-	{
-		label: "⭐ Stars",
-		key: "stargazers_count",
-		width: "120px",
-		getLabel: ({ row }) => String(row.stargazers_count ?? 0),
-	},
 ];
 
 const rows = computed(() => reposResource.data || []);
