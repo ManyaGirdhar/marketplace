@@ -1,131 +1,126 @@
 <template>
-	<div
-		class="flex h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-hidden"
-	>
-		<div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-			<header
-				class="flex items-center justify-between px-8 py-5 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/70 backdrop-blur sticky top-0 z-20"
-			>
-				<div class="space-y-2">
-					<p
-						class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
-					>
+	<div class="flex h-screen flex-col bg-white dark:bg-gray-950">
+		<header
+			class="flex h-16 items-center justify-between border-b bg-white px-6 dark:bg-gray-900"
+		>
+			<div class="flex items-center gap-4">
+				<div>
+					<p class="text-[10px] font-bold uppercase tracking-widest text-gray-500">
 						Submit App
 					</p>
-					<h1
-						class="text-2xl font-semibold text-gray-900 dark:text-white truncate max-w-[520px]"
-					>
-						{{ form.app_title || "New App" }}
+					<h1 class="text-lg font-bold text-gray-900 dark:text-white leading-none">
+						{{ form.app_title || "New Application" }}
 					</h1>
 				</div>
+			</div>
 
-				<div class="flex items-center gap-4">
+			<nav class="hidden flex-1 justify-center md:flex">
+				<div class="flex items-center gap-8">
 					<div
-						v-if="isValidating"
-						class="flex items-center gap-2 text-sm text-gray-500 italic"
+						v-for="(label, index) in ['Details', 'Validation', 'Review']"
+						:key="label"
+						class="flex items-center gap-3"
 					>
-						<div
-							class="w-4 h-4 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"
-						></div>
-						Verifying...
-					</div>
-					<div
-						v-else-if="validationPassed && currentStep === 1"
-						class="flex items-center gap-2 text-sm text-green-600 font-medium"
-					>
+						<Badge
+							:variant="currentStep >= index + 1 ? 'solid' : 'subtle'"
+							theme="gray"
+							size="lg"
+							class="h-6 w-6 rounded-full px-0 flex justify-center"
+						>
+							{{ index + 1 }}
+						</Badge>
 						<span
-							class="w-5 h-5 flex items-center justify-center bg-green-500 text-white rounded-full text-[10px]"
-							>✓</span
+							:class="[
+								'text-sm font-medium',
+								currentStep === index + 1
+									? 'text-gray-900 dark:text-white'
+									: 'text-gray-400',
+							]"
 						>
-						Compatible
-					</div>
-
-					<Button
-						variant="solid"
-						:loading="processing"
-						:disabled="isNextDisabled"
-						@click="handleContinue"
-						class="min-w-[120px]"
-					>
-						{{ currentStep === 3 ? "Finish" : "Continue" }}
-					</Button>
-				</div>
-			</header>
-
-			<main class="flex-1 overflow-y-auto">
-				<div class="max-w-5xl mx-auto px-8 py-10">
-					<div class="mb-10 flex items-center justify-center">
-						<div class="flex gap-10">
-							<div
-								v-for="(label, index) in ['App Details', 'Validation', 'Review']"
-								:key="label"
-								class="flex items-center gap-3"
-							>
-								<div
-									:class="[
-										'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300',
-										currentStep > index + 1
-											? 'bg-gray-900 text-white'
-											: currentStep === index + 1
-											? 'border-2 border-gray-900 ring-4 ring-gray-100'
-											: 'border border-gray-300 text-gray-400',
-									]"
-								>
-									{{ index + 1 }}
-								</div>
-								<span
-									:class="[
-										'text-sm font-medium',
-										currentStep === index + 1
-											? 'text-gray-900'
-											: 'text-gray-500',
-									]"
-									>{{ label }}</span
-								>
-							</div>
-						</div>
-					</div>
-
-					<div
-						class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 shadow-sm"
-					>
-						<div
-							v-if="validationError"
-							class="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm flex items-center gap-3 animate-pulse"
-						>
-							<span class="text-lg">⚠️</span>
-							{{ validationError }}
-						</div>
-						<div v-if="repoMeta.loading" class="text-center py-12">
-							Loading repository details...
-						</div>
-
-						<Step1Details
-							v-if="currentStep === 1 && !repoMeta.loading"
-							:form="form"
-							:branches="repoMeta.branches"
-							:dependencies="repoMeta.dependencies"
-							:loadingMeta="repoMeta.loading"
-							:frappeRequirement="repoMeta.frappe_requirement"
-						/>
-
-						<Step2Validation
-							v-if="currentStep === 2"
-							:form="form"
-							@validated="handleValidationUpdate"
-						/>
-						<Step3Review v-if="currentStep === 3" :form="form" />
+							{{ label }}
+						</span>
 					</div>
 				</div>
-			</main>
-		</div>
+			</nav>
+
+			<div class="flex items-center gap-3">
+				<div
+					v-if="isValidating"
+					class="flex items-center gap-2 pr-4 text-xs text-gray-500"
+				>
+					<LoadingIndicator class="w-4 h-4" />
+					<span>Verifying...</span>
+				</div>
+				<Button
+					v-if="currentStep > 1"
+					variant="ghost"
+					label="Back"
+					@click="currentStep--"
+				/>
+				<Button
+					variant="solid"
+					:loading="processing"
+					:disabled="isNextDisabled"
+					:label="currentStep === 3 ? 'Finish Submission' : 'Continue'"
+					@click="handleContinue"
+				/>
+			</div>
+		</header>
+
+		<main class="flex-1 overflow-y-auto">
+			<div class="mx-auto max-w-6xl px-6 py-10">
+				<div v-if="validationError" class="mb-8">
+					<Alert
+						theme="red"
+						:title="validationError"
+						:dismissable="true"
+						v-model="showAlert"
+						@close="validationError = ''"
+					>
+						<template #description>
+							<span class="block mt-1">
+								Please verify your repository settings and Frappe version
+								compatibility in the Basic Info section.
+							</span>
+						</template>
+					</Alert>
+				</div>
+
+				<div
+					v-if="repoMeta.loading"
+					class="flex h-64 flex-col items-center justify-center gap-4"
+				>
+					<LoadingIndicator class="h-8 w-8" />
+					<p class="text-sm text-gray-500">Fetching repository info...</p>
+				</div>
+
+				<div v-else>
+					<Step1Details
+						v-if="currentStep === 1"
+						:form="form"
+						:branches="repoMeta.branches"
+						:dependencies="repoMeta.dependencies"
+						:loadingMeta="repoMeta.loading"
+						:frappeRequirement="repoMeta.frappe_requirement"
+					/>
+
+					<div v-if="currentStep === 2" class="mx-auto max-w-3xl">
+						<Step2Validation :form="form" @validated="handleValidationUpdate" />
+					</div>
+
+					<div v-if="currentStep === 3" class="mx-auto max-w-3xl">
+						<Step3Review :form="form" />
+					</div>
+				</div>
+			</div>
+		</main>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Button, call } from "frappe-ui";
+import { Alert, Button, Badge, LoadingIndicator, FeatherIcon, call } from "frappe-ui";
 
 import Step1Details from "./wizard_steps/Step1Details.vue";
 import Step2Validation from "./wizard_steps/Step2Validation.vue";
@@ -136,15 +131,16 @@ const processing = ref(false);
 const isValidating = ref(false);
 const validationPassed = ref(false);
 const validationError = ref("");
+const showAlert = ref(false);
 
 const route = useRoute();
 const router = useRouter();
 
 const form = reactive({
-	app_name: route.query.repo_name || "",
-	app_title: route.query.repo_name || "",
-	repo_url: route.query.repo_url || "",
-	description: route.query.repo_description || "",
+	app_name: (route.query.repo_name as string) || "",
+	app_title: (route.query.repo_name as string) || "",
+	repo_url: (route.query.repo_url as string) || "",
+	description: (route.query.repo_description as string) || "",
 	branch: "",
 	logo: null,
 	app_release_id: "",
@@ -155,15 +151,24 @@ const repoMeta = reactive({
 	branches: [],
 	dependencies: [],
 	loading: false,
-	frappe_requirement: null,
+	frappe_requirement: undefined as string | undefined,
 });
 
 const repoData = ref({});
 
 watch(
+	() => form,
+	() => {
+		validationPassed.value = false;
+	},
+	{ deep: true }
+);
+
+watch(
 	() => form.versions,
 	() => {
 		validationError.value = "";
+		showAlert.value = false;
 		validationPassed.value = false;
 	},
 	{ deep: true }
@@ -184,10 +189,10 @@ onMounted(async () => {
 			form.app_name = data.metadata.app_name || form.app_name;
 			form.app_title = data.metadata.app_title || form.app_title;
 			form.description = data.metadata.app_description || form.description;
-
 			repoMeta.frappe_requirement = data.metadata.frappe_version_requirement;
 		}
-		if (data.default_branch) form.versions[0].branch = data.default_branch;
+		if (data.default_branch && form.versions.length)
+			form.versions[0].branch = data.default_branch;
 		repoMeta.branches = data.branches || [];
 		repoMeta.dependencies = data.metadata?.dependencies || [];
 	} finally {
@@ -196,6 +201,7 @@ onMounted(async () => {
 });
 
 async function checkCompatibility() {
+	showAlert.value = false;
 	if (!repoMeta.frappe_requirement) {
 		validationPassed.value = true;
 		return true;
@@ -204,6 +210,7 @@ async function checkCompatibility() {
 	const selectedVersion = form.versions[0]?.version;
 	if (!selectedVersion) {
 		validationError.value = "Please select a Frappe version.";
+		showAlert.value = true;
 		return false;
 	}
 
@@ -215,39 +222,61 @@ async function checkCompatibility() {
 		});
 
 		if (!isCompatible) {
-			validationError.value = `This app requires Frappe ${repoMeta.frappe_requirement}. Your selection (${selectedVersion}) is incompatible.`;
+			validationError.value = `Incompatible Version: This app requires Frappe ${repoMeta.frappe_requirement}.`;
 			validationPassed.value = false;
+			showAlert.value = true;
 			return false;
 		}
 
 		validationError.value = "";
 		validationPassed.value = true;
 		return true;
+	} catch (error: any) {
+		validationError.value = error.message || "Compatibility check failed.";
+		showAlert.value = true;
+		return false;
 	} finally {
 		isValidating.value = false;
 	}
 }
 
-const isNextDisabled = computed(() => {
-	if (currentStep.value === 1) {
-		return (
-			!form.app_name || !form.versions[0]?.version || processing.value || isValidating.value
-		);
+async function initializeApp() {
+	showAlert.value = false;
+	try {
+		const res = await call("marketplace.api.setup_wizard.initialize_app_step_1", {
+			form_data: JSON.stringify(form),
+			repo_data: repoData.value,
+		});
+		form.app_release_id = res.app_release;
+		return true;
+	} catch (error: any) {
+		let errorMessage = "An error occurred while creating the app record.";
+		if (error.messages && error.messages.length > 0) {
+			errorMessage = error.messages[0];
+		} else if (error.message) {
+			errorMessage = error.message;
+		}
+
+		validationError.value = errorMessage;
+		showAlert.value = true;
+		window.scrollTo({ top: 0, behavior: "smooth" });
+		return false;
 	}
-	if (currentStep.value === 2) return !validationPassed.value || processing.value;
-	return processing.value;
-});
+}
 
 async function handleContinue() {
 	if (currentStep.value === 1) {
 		const compatible = await checkCompatibility();
-
 		if (!compatible) return;
 
 		processing.value = true;
 		try {
 			const success = await initializeApp();
-			if (success) currentStep.value = 2;
+			if (success) {
+				currentStep.value = 2;
+				validationError.value = "";
+				showAlert.value = false;
+			}
 		} finally {
 			processing.value = false;
 		}
@@ -272,28 +301,16 @@ async function handleContinue() {
 	}
 }
 
-async function initializeApp() {
-	try {
-		const res = await call("marketplace.api.setup_wizard.initialize_app_step_1", {
-			form_data: JSON.stringify(form),
-			repo_data: repoData.value,
-		});
-		form.app_release_id = res.app_release;
-		return true;
-	} catch (error: any) {
-		console.error("Initialization Error:", error);
-		let errorMessage = "An error occurred while creating the app record.";
-
-		if (error.messages && error.messages.length > 0) {
-			errorMessage = error.messages[0];
-		} else if (error.message) {
-			errorMessage = error.message;
-		}
-		validationError.value = errorMessage;
-
-		return false;
+const isNextDisabled = computed(() => {
+	if (currentStep.value === 1) {
+		return (
+			!form.app_name || !form.versions[0]?.version || processing.value || isValidating.value
+		);
 	}
-}
+	if (currentStep.value === 2) return !validationPassed.value || processing.value;
+	return processing.value;
+});
+
 function handleValidationUpdate(status: boolean) {
 	validationPassed.value = status;
 }

@@ -1,188 +1,55 @@
 <template>
-	<div class="space-y-10">
-		<section class="space-y-6">
-			<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">App Identity</h2>
-
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-				<div class="space-y-6">
-					<div class="space-y-1">
-						<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-							App Name (Internal / DocName)
-						</label>
-
-						<TextInput v-model="form.app_name" variant="read-only" disabled />
-
-						<p class="text-xs text-gray-500 dark:text-gray-400">
-							System identifier used as DocName. Cannot be changed after creation.
-						</p>
-					</div>
-
-					<div class="space-y-1">
-						<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-							App Title (Display Name)
-						</label>
-
-						<TextInput v-model="form.app_title" placeholder="e.g. Airplane Mode" />
-
-						<p class="text-xs text-gray-500 dark:text-gray-400">
-							This is the public display name. You can change this anytime.
-						</p>
-					</div>
-
-					<div class="space-y-1">
-						<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-							Repository URL
-						</label>
-
-						<TextInput v-model="form.repo_url" variant="read-only" />
-
-						<p class="text-xs text-gray-500 dark:text-gray-400">
-							Used to fetch branches and metadata
-						</p>
-					</div>
-				</div>
-
-				<div class="space-y-6">
-					<div
-						class="border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-800"
-					>
-						<div class="flex items-center gap-2 mb-3">
-							<FeatherIcon
-								name="layers"
-								class="w-4 h-4 text-gray-500 dark:text-gray-400"
-							/>
-							<p class="text-sm font-medium text-gray-700 dark:text-gray-200">
-								Detected Dependencies
-							</p>
-						</div>
-						<div
-							v-if="frappeRequirement"
-							class="mt-4 flex items-start gap-2 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg border border-blue-100 dark:border-blue-800"
-						>
-							<FeatherIcon name="info" class="w-3.5 h-3.5 mt-0.5" />
-							<div>
-								<p class="font-semibold">TOML Requirement Detected:</p>
-								<p>This app specifies Frappe {{ frappeRequirement }}.</p>
-							</div>
-						</div>
-
-						<div class="flex flex-wrap gap-2 mt-4">
-							<Badge v-for="app in dependencies" :key="app">
-								{{ app }}
-							</Badge>
-
-							<div
-								v-if="loadingMeta"
-								class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
-							>
-								<LoadingIndicator class="w-4 h-4" />
-								Scanning pyproject.toml…
-							</div>
-
-							<div
-								v-else-if="!dependencies.length"
-								class="text-sm text-gray-400 dark:text-gray-500 italic"
-							>
-								No dependencies declared
-							</div>
-						</div>
-					</div>
-
-					<div
-						class="border border-gray-200 dark:border-gray-700 rounded-xl p-5 flex items-center gap-5 bg-white dark:bg-gray-800"
-					>
-						<div
-							class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden"
-						>
-							<img
-								v-if="form.logo"
-								:src="form.logo"
-								class="w-full h-full object-cover"
-							/>
-							<FeatherIcon
-								v-else
-								name="image"
-								class="w-6 h-6 text-gray-400 dark:text-gray-500"
-							/>
-						</div>
-
-						<div>
-							<p class="text-sm font-medium text-gray-800 dark:text-gray-100">
-								App Logo
-							</p>
-							<p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-								Displayed on Marketplace listing
-							</p>
-
-							<FileUploader @success="(file) => (form.logo = file.file_url)">
-								<template #default="{ openFileSelector, uploading, progress }">
-									<Button
-										size="sm"
-										@click="openFileSelector"
-										:loading="uploading"
-									>
-										{{ uploading ? `Uploading ${progress}%` : "Upload Logo" }}
-									</Button>
-								</template>
-							</FileUploader>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<section>
-			<div
-				class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-6"
-			>
-				<div>
-					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-						Compatibility Mapping
+	<div class="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
+		<div class="lg:col-span-8 flex flex-col gap-10">
+			<section class="flex flex-col gap-4">
+				<div class="px-1">
+					<h2 class="text-sm font-bold uppercase tracking-widest text-gray-500">
+						Basic Info
 					</h2>
-					<p class="text-sm text-gray-500 dark:text-gray-400">
-						Map Frappe versions to the branch that supports them.
-					</p>
 				</div>
 
-				<div
-					class="grid grid-cols-[180px_40px_1fr_40px] text-xs text-gray-500 dark:text-gray-400 px-2"
-				>
-					<div>Frappe Version</div>
-					<div></div>
-					<div>Supported Branch</div>
-					<div></div>
-				</div>
-
-				<div class="space-y-3">
-					<div
-						v-for="(row, index) in form.versions"
-						:key="index"
-						class="grid grid-cols-[180px_40px_1fr_40px] items-center gap-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-3"
-					>
-						<Select
-							:options="frappeVersionOptions"
-							v-model="row.version"
-							placeholder="Select version"
-							:loading="versionsResource.loading"
+				<div class="flex flex-col gap-5">
+					<div class="flex flex-col gap-1.5">
+						<label class="text-xs text-gray-600 ml-1">App Title</label>
+						<TextInput
+							v-model="form.app_title"
+							placeholder="e.g. Library Management"
 						/>
-						<div class="text-center text-gray-400">→</div>
+					</div>
 
-						<Autocomplete
-							:options="branchOptions"
-							v-model="row.branch"
-							placeholder="Search branch"
-							:loading="loadingMeta"
-						/>
-						<Button variant="ghost" size="sm" @click="askRemove(index)">
-							<FeatherIcon
-								name="trash-2"
-								class="w-4 h-4 text-red-500 hover:text-red-600"
-							/>
-						</Button>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div class="flex flex-col gap-1.5">
+							<label
+								class="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1"
+								>Internal Name</label
+							>
+							<div
+								class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-100 text-sm text-gray-600 font-mono"
+							>
+								{{ form.app_name || "---" }}
+							</div>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label
+								class="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1"
+								>Repository URL</label
+							>
+							<div
+								class="px-3 py-2 rounded-lg bg-gray-50 border border-gray-100 text-sm text-gray-600 break-all font-mono leading-relaxed"
+							>
+								{{ form.repo_url || "---" }}
+							</div>
+						</div>
 					</div>
 				</div>
+			</section>
 
-				<div class="pt-2">
+			<section class="flex flex-col gap-4">
+				<div class="flex items-center justify-between px-1">
+					<h2 class="text-sm font-bold uppercase tracking-widest text-gray-500">
+						Compatibility
+					</h2>
 					<Button variant="outline" size="sm" @click="addRow">
 						<template #prefix>
 							<FeatherIcon name="plus" class="w-4 h-4" />
@@ -190,24 +57,165 @@
 						Add another version
 					</Button>
 				</div>
+
+				<div class="flex flex-col gap-4">
+					<div
+						v-for="(row, index) in form.versions"
+						:key="index"
+						class="p-5 border rounded-xl bg-white dark:bg-gray-900 shadow-sm transition-shadow hover:shadow-md"
+					>
+						<div class="flex flex-col gap-6 md:flex-row md:items-end">
+							<div class="flex-1 flex flex-col gap-1.5">
+								<label class="text-[10px] font-bold uppercase text-gray-400 ml-1"
+									>Frappe Version</label
+								>
+								<Select
+									:options="frappeVersionOptions"
+									v-model="row.version"
+									placeholder="Select Version"
+								/>
+							</div>
+
+							<div class="hidden md:flex items-center justify-center pb-2.5">
+								<FeatherIcon name="arrow-right" class="h-4 w-4 text-gray-300" />
+							</div>
+
+							<div class="flex-1 flex flex-col gap-1.5">
+								<label class="text-[10px] font-bold uppercase text-gray-400 ml-1"
+									>Branch</label
+								>
+								<Autocomplete
+									:options="branchOptions"
+									v-model="row.branch"
+									placeholder="Search branch"
+								/>
+							</div>
+
+							<div class="flex justify-end md:pb-0.5">
+								<Button
+									variant="ghost"
+									theme="red"
+									icon="trash-2"
+									@click="askRemove(index)"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<div
+						v-if="!form.versions || !form.versions.length"
+						class="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-xl bg-gray-50/50"
+					>
+						<p class="text-sm text-gray-500 italic">
+							No compatibility versions added.
+						</p>
+						<Button variant="link" label="Add your first version" @click="addRow" />
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<div class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
+			<div class="p-6 border rounded-xl bg-white dark:bg-gray-900 shadow-sm">
+				<h3 class="mb-5 text-xs font-bold uppercase text-gray-500 tracking-wider">
+					App Logo
+				</h3>
+				<div class="flex flex-col items-center gap-5">
+					<div
+						class="flex h-24 w-24 items-center justify-center rounded-2xl border-2 border-dashed bg-gray-50 dark:bg-gray-800 overflow-hidden"
+					>
+						<img
+							v-if="form.logo"
+							:src="form.logo"
+							class="h-full w-full object-cover"
+						/>
+						<FeatherIcon v-else name="image" class="h-8 w-8 text-gray-300" />
+					</div>
+					<FileUploader @success="(file) => (form.logo = file.file_url)" class="w-full">
+						<template #default="{ openFileSelector, uploading }">
+							<Button
+								variant="outline"
+								class="w-full"
+								:label="uploading ? 'Uploading...' : 'Upload Logo'"
+								@click="openFileSelector"
+							/>
+						</template>
+					</FileUploader>
+				</div>
 			</div>
-		</section>
+
+			<div
+				class="p-6 border border-blue-100 bg-blue-50/30 dark:bg-blue-900/10 dark:border-blue-900/30 rounded-xl"
+			>
+				<div class="mb-4 flex items-center gap-2 text-blue-700 dark:text-blue-400">
+					<FeatherIcon name="cpu" class="h-4 w-4" />
+					<h3 class="text-xs font-bold uppercase tracking-wider">Requirements</h3>
+				</div>
+
+				<div v-if="loadingMeta" class="py-2 flex justify-center">
+					<LoadingIndicator class="w-5 h-5 text-blue-500" />
+				</div>
+
+				<div v-else class="flex flex-col gap-4">
+					<div
+						v-if="frappeRequirement"
+						class="p-3 bg-white dark:bg-gray-900 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm"
+					>
+						<p class="text-[10px] font-bold uppercase text-blue-500 mb-1">Framework</p>
+						<p
+							class="text-sm font-semibold text-gray-900 dark:text-white leading-none"
+						>
+							Frappe {{ frappeRequirement }}
+						</p>
+					</div>
+
+					<div class="flex flex-col gap-2">
+						<p class="text-[10px] font-bold uppercase text-blue-500 ml-1">
+							Dependencies
+						</p>
+						<div class="flex flex-wrap gap-2">
+							<Badge
+								v-for="app in dependencies"
+								:key="app"
+								theme="blue"
+								variant="subtle"
+							>
+								{{ app }}
+							</Badge>
+							<p
+								v-if="!dependencies || !dependencies.length"
+								class="text-xs italic text-gray-500"
+							>
+								None detected
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<Dialog
+			v-model="showDeleteDialog"
+			:options="{
+				title: 'Remove Mapping',
+				message: 'Are you sure you want to remove this version mapping?',
+				size: 'sm',
+			}"
+		>
+			<template #actions>
+				<div class="flex gap-2 w-full">
+					<Button class="flex-1" label="Cancel" @click="showDeleteDialog = false" />
+					<Button
+						class="flex-1"
+						variant="solid"
+						theme="red"
+						label="Remove"
+						@click="removeRowConfirmed"
+					/>
+				</div>
+			</template>
+		</Dialog>
 	</div>
-
-	<Dialog
-		v-model="showDeleteDialog"
-		:options="{
-			title: 'Delete version mapping?',
-			message: 'This compatibility mapping will be permanently removed.',
-			size: 'sm',
-		}"
-	>
-		<template #actions>
-			<Button variant="ghost" @click="showDeleteDialog = false"> Cancel </Button>
-
-			<Button variant="solid" theme="red" @click="removeRowConfirmed"> Delete </Button>
-		</template>
-	</Dialog>
 </template>
 
 <script setup>
@@ -215,34 +223,51 @@ import { computed, ref } from "vue";
 import {
 	TextInput,
 	Select,
+	Autocomplete,
 	Badge,
 	Button,
 	FeatherIcon,
 	FileUploader,
 	LoadingIndicator,
-	Autocomplete,
-	createResource,
 	Dialog,
+	createResource,
 } from "frappe-ui";
+
+const props = defineProps({
+	form: {
+		type: Object,
+		default: () => ({ versions: [], app_title: "", logo: "" }),
+	},
+	branches: {
+		type: Array,
+		default: () => [],
+	},
+	dependencies: {
+		type: Array,
+		default: () => [],
+	},
+	loadingMeta: {
+		type: Boolean,
+		default: false,
+	},
+	frappeRequirement: {
+		type: String,
+		default: "",
+	},
+});
 
 const showDeleteDialog = ref(false);
 const rowToDelete = ref(null);
 
-const props = defineProps([
-	"form",
-	"branches",
-	"dependencies",
-	"loadingMeta",
-	"frappeRequirement",
-]);
-
-const branchOptions = computed(() => props.branches.map((b) => ({ label: b, value: b })));
+const branchOptions = computed(() => {
+	return props.branches ? props.branches.map((b) => ({ label: b, value: b })) : [];
+});
 
 const versionsResource = createResource({
 	url: "frappe.client.get_list",
 	params: {
 		doctype: "Frappe Version",
-		fields: ["name", "number"],
+		fields: ["name"],
 		filters: { public: 1 },
 		order_by: "number desc",
 	},
@@ -252,12 +277,15 @@ const versionsResource = createResource({
 const frappeVersionOptions = computed(() => {
 	if (!versionsResource.data) return [];
 	return versionsResource.data.map((v) => ({
-		label: v.version_name || v.name,
+		label: v.name,
 		value: v.name,
 	}));
 });
 
 function addRow() {
+	if (!props.form.versions) {
+		props.form.versions = [];
+	}
 	props.form.versions.push({ version: "", branch: "" });
 }
 
@@ -267,7 +295,10 @@ function askRemove(index) {
 }
 
 function removeRowConfirmed() {
-	props.form.versions.splice(rowToDelete.value, 1);
+	if (rowToDelete.value !== null) {
+		props.form.versions.splice(rowToDelete.value, 1);
+	}
 	showDeleteDialog.value = false;
+	rowToDelete.value = null;
 }
 </script>

@@ -184,15 +184,19 @@
 							}"
 						>
 							<template #actions>
-								<Button @click="showDeleteDialog = false">Cancel</Button>
-								<Button
-									variant="solid"
-									theme="red"
-									:loading="deleteAppResource.loading"
-									@click="confirmDeleteApp"
-								>
-									Delete App
-								</Button>
+								<div class="flex flex-row justify-end gap-3 w-full">
+									<Button variant="ghost" @click="showDeleteDialog = false">
+										Cancel
+									</Button>
+									<Button
+										variant="solid"
+										theme="red"
+										:loading="deleteAppResource.loading"
+										@click="confirmDeleteApp"
+									>
+										Delete App
+									</Button>
+								</div>
 							</template>
 						</Dialog>
 					</div>
