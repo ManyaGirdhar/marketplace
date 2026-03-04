@@ -25,11 +25,11 @@ jobs:
     steps:
       - name: Setup Python & Node
         uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with: { python-version: '3.14' }
       
       - name: Setup Node
         uses: actions/setup-node@v3
-        with: { node-version: 20 }
+        with: { node-version: 24 }
 
       - name: Initialize Bench
         run: |
