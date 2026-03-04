@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    # Borrowed from your file: Real services for a real Frappe environment
     services:
       mariadb:
         image: mariadb:10.6
@@ -26,11 +25,11 @@ jobs:
     steps:
       - name: Setup Python & Node
         uses: actions/setup-python@v5
-        with: { python-version: '3.14' } # Use stable 3.11 instead of 3.14
+        with: { python-version: '3.11' }
       
       - name: Setup Node
         uses: actions/setup-node@v3
-        with: { node-version: 24 }
+        with: { node-version: 20 }
 
       - name: Initialize Bench
         run: |
