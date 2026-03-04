@@ -165,7 +165,7 @@ def fetch_readme_as_html(source_doc):
 
 def dispatch_ci_validation(release_doc, repo_full_name):
 	secret_key = frappe.conf.get("marketplace_ci_secret")
-	ci_repo = "frappe-community/marketplace"
+	ci_repo = "ManyaGirdhar/marketplace"
 
 	github_token = get_github_token(release_doc.owner)
 	if not github_token:
