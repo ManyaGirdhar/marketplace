@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Setup Python & Node
         uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
+        with: { python-version: '3.12' }
       
       - name: Setup Node
         uses: actions/setup-node@v3
