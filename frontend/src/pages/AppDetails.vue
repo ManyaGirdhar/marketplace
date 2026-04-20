@@ -263,7 +263,9 @@ const deleteAppResource = createResource({
 });
 
 const latestRelease = computed(() => releasesResource.data?.[0] || null);
-const canSubmitForReview = computed(() => latestRelease.value?.ci_status === "Passed");
+const canSubmitForReview = computed(
+	() => latestRelease.value?.ci_status === "Passed" && app.value?.status === "Draft"
+);
 
 async function handleSubmitForReview() {
 	await submitForReview.fetch({ app_release_id: latestRelease.value.name });

@@ -126,7 +126,6 @@ import Step1Details from "./wizard_steps/Step1Details.vue";
 import Step2Validation from "./wizard_steps/Step2Validation.vue";
 import Step3Review from "./wizard_steps/Step3Review.vue";
 
-const currentStep = ref(1);
 const processing = ref(false);
 const isValidating = ref(false);
 const validationPassed = ref(false);
@@ -136,6 +135,14 @@ const showAlert = ref(false);
 const route = useRoute();
 const router = useRouter();
 
+const currentStep = ref(Number(route.query.step) || 1);
+
+watch(currentStep, (step) => {
+	router.replace({
+		query: { ...route.query, step },
+	});
+});
+
 const form = reactive({
 	app_name: (route.query.repo_name as string) || "",
 	app_title: (route.query.repo_name as string) || "",
@@ -143,9 +150,16 @@ const form = reactive({
 	description: (route.query.repo_description as string) || "",
 	branch: "",
 	logo: null,
-	app_release_id: "",
+	app_release_id: (route.query.app_release_id as string) || "",
 	versions: [{ version: "", branch: "" }],
 });
+
+watch(
+	() => form.app_release_id,
+	(id) => {
+		if (id) router.replace({ query: { ...route.query, app_release_id: id } });
+	}
+);
 
 const repoMeta = reactive({
 	branches: [],
@@ -157,26 +171,22 @@ const repoMeta = reactive({
 const repoData = ref({});
 
 watch(
-	() => form,
+	() => ({
+		repo_url: form.repo_url,
+		app_name: form.app_name,
+		branch: form.branch,
+	}),
 	() => {
 		validationPassed.value = false;
-	},
-	{ deep: true }
-);
-
-watch(
-	() => form.versions,
-	() => {
 		validationError.value = "";
 		showAlert.value = false;
-		validationPassed.value = false;
 	},
 	{ deep: true }
 );
 
 onMounted(async () => {
 	if (!form.repo_url) {
-		router.replace("/new-app");
+		router.replace({ name: "CreateApp" });
 		return;
 	}
 	repoMeta.loading = true;
@@ -241,6 +251,9 @@ async function checkCompatibility() {
 }
 
 async function initializeApp() {
+	if (form.app_release_id) {
+		return true;
+	}
 	showAlert.value = false;
 	try {
 		const res = await call("marketplace.api.setup_wizard.initialize_app_step_1", {
@@ -269,10 +282,17 @@ async function handleContinue() {
 		const compatible = await checkCompatibility();
 		if (!compatible) return;
 
+		if (form.app_release_id) {
+			validationPassed.value = false;
+			currentStep.value = 2;
+			return;
+		}
+
 		processing.value = true;
 		try {
 			const success = await initializeApp();
 			if (success) {
+				validationPassed.value = false;
 				currentStep.value = 2;
 				validationError.value = "";
 				showAlert.value = false;
@@ -294,7 +314,7 @@ async function handleContinue() {
 			await call("marketplace.api.setup_wizard.finalize_submission", {
 				app_release_id: form.app_release_id,
 			});
-			router.push("/my-apps");
+			router.push({ name: "MyApps" });
 		} finally {
 			processing.value = false;
 		}

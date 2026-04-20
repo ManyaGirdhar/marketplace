@@ -7,7 +7,7 @@
 			<p class="text-gray-500 dark:text-gray-400">
 				Validating release:
 				<span class="font-mono text-sm text-gray-900 dark:text-white">
-					{{ form.app_release }}
+					{{ form.app_release_id }}
 				</span>
 			</p>
 			<p v-if="hash" class="text-xs text-gray-500 mt-2">
@@ -36,9 +36,9 @@
 							'w-2 h-2 rounded-full transition-all duration-500',
 						]"
 					></div>
-					<span class="font-medium text-gray-800 dark:text-gray-200">
-						{{ check.label }}
-					</span>
+					<span class="font-medium text-gray-800 dark:text-gray-200">{{
+						check.label
+					}}</span>
 				</div>
 
 				<div class="flex items-center gap-3">
@@ -53,9 +53,9 @@
 						name="x-circle"
 						class="w-5 h-5 text-red-500"
 					/>
-					<span v-else class="text-xs text-gray-400 uppercase font-bold tracking-widest">
-						Waiting
-					</span>
+					<span v-else class="text-xs text-gray-400 uppercase font-bold tracking-widest"
+						>Waiting</span
+					>
 				</div>
 			</div>
 		</div>
@@ -65,10 +65,9 @@
 			class="mt-4 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl"
 		>
 			<p class="text-xs font-bold text-red-500 uppercase mb-2">Build Logs</p>
-			<pre class="text-xs text-red-600 dark:text-red-300 font-mono whitespace-pre-wrap">
-		{{ validationLogs || "No logs available" }}
-      </pre
-			>
+			<pre class="text-xs text-red-600 dark:text-red-300 font-mono whitespace-pre-wrap">{{
+				validationLogs || "No logs available"
+			}}</pre>
 		</div>
 
 		<div
@@ -113,12 +112,12 @@ const automatedChecks = computed(() => [
 ]);
 
 async function fetchStatus() {
-	if (!props.form.app_release) return;
+	if (!props.form.app_release_id) return;
 
 	try {
 		const data = await call("frappe.client.get_value", {
 			doctype: "App Release",
-			filters: { name: props.form.app_release },
+			filters: { name: props.form.app_release_id },
 			fieldname: ["ci_status", "validation_logs", "hash"],
 		});
 

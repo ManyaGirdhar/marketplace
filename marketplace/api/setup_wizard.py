@@ -172,13 +172,17 @@ def dispatch_ci_validation(release_doc, repo_full_name):
 		return
 
 	url = f"https://api.github.com/repos/{ci_repo}/dispatches"
+	clean_repo_full_name = str(repo_full_name).strip()
+	clean_branch = str(release_doc.branch).strip()
+	clean_app_name = str(release_doc.app).strip()
+
 	payload = {
 		"event_type": "validate_release",
 		"client_payload": {
 			"release_id": release_doc.name,
-			"repo_full_name": repo_full_name,
-			"branch": release_doc.branch,
-			"app_name": release_doc.app,
+			"repo_full_name": clean_repo_full_name,
+			"branch": clean_branch,
+			"app_name": clean_app_name,
 			"secret_key": secret_key,
 			"callback_url": f"{get_url()}/api/method/marketplace.api.setup_wizard.ci_callback",
 		},
@@ -211,7 +215,9 @@ def get_github_token(user):
 
 
 @frappe.whitelist(allow_guest=True)  # nosemgrep
-def ci_callback(release_id: str, status: str, secret_key: str, commit_hash: str | None = None):
+def ci_callback(
+	release_id: str, status: str, secret_key: str, commit_hash: str | None = None, logs: str | None = None
+):
 	expected_secret = frappe.conf.get("marketplace_ci_secret")
 
 	if not expected_secret or not hmac.compare_digest(str(secret_key), str(expected_secret)):
@@ -222,7 +228,11 @@ def ci_callback(release_id: str, status: str, secret_key: str, commit_hash: str 
 	frappe.db.set_value(
 		"App Release",
 		release_id,
-		{"ci_status": status_map.get(status.lower(), "Running"), "hash": commit_hash},
+		{
+			"ci_status": status_map.get(status.lower(), "Running"),
+			"hash": commit_hash,
+			"validation_logs": logs,
+		},
 		update_modified=True,
 	)
 
