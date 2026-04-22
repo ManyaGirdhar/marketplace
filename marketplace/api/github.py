@@ -108,7 +108,13 @@ def get_publisher_repos():
         "https://api.github.com/user/repos?type=owner&sort=updated",
         headers=headers
     )
-    return res.json() if res.status_code == 200 else []
+    if res.status_code != 200:
+        frappe.log_error(
+            f"GitHub repos fetch failed: {res.status_code} {res.text}",
+            "GitHub Integration"
+        )
+        return []
+    return res.json()
 
 @frappe.whitelist()
 def fetch_repo_info(repo_url: str):

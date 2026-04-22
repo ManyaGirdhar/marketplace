@@ -18,11 +18,6 @@ def initialize_app_step_1(form_data: str, repo_data: dict | None = None):
 
 		user = frappe.session.user
 
-		frappe.log_error(
-			title="Marketplace Debug: Repo Data Received",
-			message=frappe.as_json({"data": data, "repo_data": repo_data}),
-		)
-
 		publisher = frappe.db.get_value("Marketplace Publisher", {"user": user}, "name")
 		if not publisher:
 			frappe.throw(_("Publisher profile not found. Please complete setup first."))
@@ -242,11 +237,14 @@ def ci_callback(
 @frappe.whitelist()
 def finalize_submission(app_release_id: str):
 	release = frappe.get_doc("App Release", app_release_id)
+	publisher = frappe.db.get_value("Marketplace Publisher", {"user": frappe.session.user}, "name")
+	if not publisher or release.publisher != publisher:
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 	mkt_app_name = frappe.db.get_value("Marketplace App", {"app": release.app}, "name")
 
 	if mkt_app_name:
-		frappe.db.set_value("Marketplace App", mkt_app_name, "status", "Pending Review")
+		frappe.db.set_value("Marketplace App", mkt_app_name, "status", "In Review")
 
 	return {"status": "success"}
 

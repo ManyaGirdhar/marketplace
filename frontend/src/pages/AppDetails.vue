@@ -268,6 +268,7 @@ const canSubmitForReview = computed(
 );
 
 async function handleSubmitForReview() {
+	if (!latestRelease.value) return;
 	await submitForReview.fetch({ app_release_id: latestRelease.value.name });
 	await appResource.fetch();
 	await releasesResource.fetch();
